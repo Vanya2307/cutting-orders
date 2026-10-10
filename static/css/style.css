@@ -1,0 +1,236 @@
+:root {
+    /* Графитна рамка */
+    --graphite-900: #1c2023;
+    --graphite-800: #262b2f;
+    --graphite-700: #353b40;
+    --graphite-500: #5f676d;
+
+    /* По-мека хартия и едва видима мрежа */
+    --paper: #dce1dc;
+    --paper-card: #e9ede8;
+    --line: #bcc5bc;
+    --grid-fine: rgba(60, 70, 75, 0.009);
+    --grid-major: rgba(60, 70, 75, 0.016);
+
+    /* Текст */
+    --ink: #22272b;
+    --ink-muted: #596268;
+
+    /* Меден акцент */
+    --accent: #b8733a;
+    --accent-light: #d99a62;
+    --accent-dark: #8c5426;
+    --accent-hover: #74441f;
+    --accent-soft: rgba(184, 115, 58, 0.12);
+
+    /* Светла тема за съдържанието */
+    --bs-dark-rgb: 38, 43, 47;
+    --bs-body-color: var(--ink);
+    --bs-body-bg: var(--paper);
+    --bs-secondary-color: var(--ink-muted);
+    --bs-border-color: var(--line);
+    --bs-link-color: var(--accent-dark);
+    --bs-link-color-rgb: 140, 84, 38;
+    --bs-link-hover-color: var(--accent-hover);
+    --bs-link-hover-color-rgb: 116, 68, 31;
+}
+
+/* Тъмна чертожна маса */
+body {
+    background-color: var(--graphite-900);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Чертожен лист */
+body > main.container {
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(var(--grid-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+        linear-gradient(var(--grid-fine) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px);
+    background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    width: calc(100% - 2rem);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 3rem;
+}
+
+@media (max-width: 767.98px) {
+    body > main.container {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        padding: 1.5rem;
+    }
+}
+
+/* Навигация и footer */
+.navbar {
+    border-bottom: 2px solid var(--accent);
+}
+
+.navbar .navbar-brand {
+    color: var(--accent-light);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.navbar .navbar-brand:hover,
+.navbar .navbar-brand:focus {
+    color: #eef1f3;
+}
+
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active {
+    color: var(--accent-light);
+}
+
+footer {
+    border-top: 1px solid var(--graphite-500);
+}
+
+footer small {
+    color: #b8c0c6;
+}
+
+/* Заглавие с размерна линия */
+.page-title {
+    display: inline-block;
+    position: relative;
+    color: var(--ink);
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    line-height: 1.3;
+    padding-bottom: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+}
+
+.page-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 9px;
+    border-left: 1px solid var(--accent);
+    border-right: 1px solid var(--accent);
+}
+
+/* По-тъмен меден фон за четлив бял текст */
+.btn-accent {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: var(--accent-dark);
+    --bs-btn-border-color: var(--accent-dark);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: var(--accent-hover);
+    --bs-btn-hover-border-color: var(--accent-hover);
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: var(--accent-hover);
+    --bs-btn-active-border-color: var(--accent-hover);
+    --bs-btn-focus-shadow-rgb: 184, 115, 58;
+}
+
+.btn-outline-accent {
+    --bs-btn-color: var(--accent-dark);
+    --bs-btn-border-color: var(--accent-dark);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: var(--accent-dark);
+    --bs-btn-hover-border-color: var(--accent-dark);
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: var(--accent-hover);
+    --bs-btn-active-border-color: var(--accent-hover);
+    --bs-btn-focus-shadow-rgb: 184, 115, 58;
+}
+
+/* Карти и таблици */
+.card {
+    background-color: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+}
+
+.table-drawing {
+    --bs-table-bg: var(--paper-card);
+    --bs-table-color: var(--ink);
+    --bs-table-border-color: var(--line);
+    background-color: var(--paper-card);
+    border: 1px solid var(--graphite-700);
+}
+
+.table-drawing thead th {
+    background-color: var(--graphite-800);
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.table-drawing td,
+.table-drawing th {
+    border-color: var(--line);
+}
+
+.num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Основен надпис за поръчка */
+.title-block {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    border: 2px solid var(--graphite-800);
+    background-color: var(--paper-card);
+    max-width: 420px;
+    margin-left: auto;
+    font-size: 0.9rem;
+}
+
+.title-block dt,
+.title-block dd {
+    margin: 0;
+    padding: 0.35rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.title-block dt {
+    border-right: 1px solid var(--line);
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+
+.title-block dt:last-of-type,
+.title-block dd:last-of-type {
+    border-bottom: none;
+}
+
+.step-number {
+    color: var(--accent-dark);
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
