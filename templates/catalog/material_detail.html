@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ material }} | Материали{% endblock %}
+
+{% block content %}
+    <a class="d-inline-block mb-3 small" href="{% url 'catalog:material-list' %}">&larr; Всички материали</a>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <h1 class="page-title">{{ material }}</h1>
+        <div class="d-flex gap-2">
+            {# Replace "#" with the edit and delete URLs once those pages exist #}
+            <a class="btn btn-outline-accent" href="#">Редактирай</a>
+            <a class="btn btn-outline-danger" href="#">Изтрий</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <dl class="row mb-0 detail-list">
+                <dt class="col-sm-4">Тип</dt>
+                <dd class="col-sm-8">{{ material.get_material_type_display }}</dd>
+
+                <dt class="col-sm-4">Марка</dt>
+                <dd class="col-sm-8">{{ material.get_manufacturer_display }}</dd>
+
+                <dt class="col-sm-4">Код на декора</dt>
+                <dd class="col-sm-8">{{ material.decor_code }}</dd>
+
+                <dt class="col-sm-4">Име на декора</dt>
+                <dd class="col-sm-8">{{ material.decor_name }}</dd>
+
+                <dt class="col-sm-4">Дебелина</dt>
+                <dd class="col-sm-8">{{ material.thickness }} мм</dd>
+
+                <dt class="col-sm-4">Размер на плочата</dt>
+                <dd class="col-sm-8">{{ material.board_length }} &times; {{ material.board_width }} мм</dd>
+
+                <dt class="col-sm-4">Фладер</dt>
+                <dd class="col-sm-8">{{ material.has_grain|yesno:"Да,Не" }}</dd>
+            </dl>
+        </div>
+    </div>
+{% endblock %}
