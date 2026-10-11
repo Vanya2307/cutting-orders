@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 
 
 class Material(models.Model):
@@ -22,6 +23,13 @@ class Material(models.Model):
         ('GETALIT', 'Getalit'),
         ('GLUNZ', 'Glunz')
     ]
+    BOARD_SIZES = {
+        'LPDCH': {'length': 2800, 'widths': [2070]},
+        'MDF': {'length': 2800, 'widths': [1300, 1220]},
+        'HDF': {'length': 2800, 'widths': [2070]},
+        'TOP': {'length': 4100, 'widths': [600, 635, 920]},
+        'BACK': {'length': 4100, 'widths': [620, 640]},
+    }
     material_type = models.CharField(max_length=5, choices=TYPE_CHOICES)
     manufacturer = models.CharField(max_length=50, choices=MANUFACTURER_CHOICES)
 
@@ -36,6 +44,29 @@ class Material(models.Model):
 
     def __str__(self):
         return f"{self.decor_code} {self.decor_name}"
+
+    def clean(self):
+        super().clean()
+
+        board_size = self.BOARD_SIZES.get(self.material_type)
+
+        if board_size is None:
+            return
+
+        errors = {}
+        if self.board_length is not None and self.board_length != board_size['length']:
+            errors['board_length'] = (
+                f"Дължината на плочата трябва да бъде {board_size['length']} мм."
+            )
+
+        if self.board_width is not None and self.board_width not in board_size['widths']:
+            allowed_widths = ', '.join(str(w) for w in board_size['widths'])
+            errors['board_width'] = (
+                f"Допустими ширини: {allowed_widths} мм."
+            )
+
+        if errors:
+            raise ValidationError(errors)
 
 
 class Service(models.Model):
