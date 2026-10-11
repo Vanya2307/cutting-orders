@@ -32,7 +32,7 @@
                             </td>
                             <td>{{ material.get_material_type_display }}</td>
                             <td>{{ material.get_manufacturer_display }}</td>
-                            <td class="num">{{ material.thickness }}</td>
+                            <td class="num">{{ material.thickness|floatformat:"-1" }}</td>
                             <td class="num">{{ material.board_length }} &times; {{ material.board_width }}</td>
                             <td>{{ material.has_grain|yesno:"Да,Не" }}</td>
                         </tr>

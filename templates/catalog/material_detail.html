@@ -8,9 +8,9 @@
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
         <h1 class="page-title">{{ material }}</h1>
         <div class="d-flex gap-2">
-            {# Replace "#" with the edit and delete URLs once those pages exist #}
-            <a class="btn btn-outline-accent" href="#">Редактирай</a>
-            <a class="btn btn-outline-danger" href="#">Изтрий</a>
+           
+            <a class="btn btn-outline-accent" href="{% url 'catalog:material-update' material.pk %}">Редактирай</a>
+            <a class="btn btn-outline-danger" href="{% url 'catalog:material-delete' material.pk %}">Изтрий</a>
         </div>
     </div>
 

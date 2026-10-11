@@ -56,7 +56,7 @@
 
         <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-accent">Запази</button>
-            <a class="btn btn-outline-secondary" href="{% url 'catalog:material-list' %}">Откажи</a>
+            <a class="btn btn-outline-secondary" href="{% if object %}{% url 'catalog:material-detail' object.pk %}{% else %}{% url 'catalog:material-list' %}{% endif %}">Откажи</a>
         </div>
     </form>
 {% endblock %}
