@@ -16,11 +16,11 @@
 
     <div class="card">
         <div class="card-body p-0">
-            <dl class="row mb-0 detail-list">
+            <dl class="row g-0 mb-0 detail-list">
                 <dt class="col-sm-4">Тип</dt>
                 <dd class="col-sm-8">{{ material.get_material_type_display }}</dd>
 
-                <dt class="col-sm-4">Марка</dt>
+                <dt class="col-sm-4">Производител</dt>
                 <dd class="col-sm-8">{{ material.get_manufacturer_display }}</dd>
 
                 <dt class="col-sm-4">Код на декора</dt>
@@ -30,7 +30,7 @@
                 <dd class="col-sm-8">{{ material.decor_name }}</dd>
 
                 <dt class="col-sm-4">Дебелина</dt>
-                <dd class="col-sm-8">{{ material.thickness }} мм</dd>
+                <dd class="col-sm-8">{{ material.thickness|floatformat:"-1" }} мм</dd>
 
                 <dt class="col-sm-4">Размер на плочата</dt>
                 <dd class="col-sm-8">{{ material.board_length }} &times; {{ material.board_width }} мм</dd>

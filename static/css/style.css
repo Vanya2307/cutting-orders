@@ -253,3 +253,51 @@ button:focus-visible {
 .detail-list dd:last-of-type {
     border-bottom: none;
 }
+
+/* -Форми в стил "чертеж"- */
+
+.drawing-form input[type="text"],
+.drawing-form input[type="number"],
+.drawing-form input[type="email"],
+.drawing-form input[type="tel"],
+.drawing-form select,
+.drawing-form textarea {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--paper-card);
+    border: 1px solid var(--line);
+    border-bottom: 2px solid var(--graphite-500);
+    border-radius: 2px;
+    color: var(--ink);
+}
+
+.drawing-form input:focus,
+.drawing-form select:focus,
+.drawing-form textarea:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+    box-shadow: 0 2px 0 0 var(--accent-soft);
+}
+
+.drawing-form input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-right: 0.5rem;
+}
+
+.drawing-form .form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.field-error {
+    color: #b02a37;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.drawing-form .form-check {
+    padding-left: 0;
+}
