@@ -69,6 +69,27 @@ class Material(models.Model):
             raise ValidationError(errors)
 
 
+    class Meta:
+        ordering = ['material_type', 'decor_code']
+        verbose_name = 'Материал'
+        verbose_name_plural = 'Материали'
+    
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    'material_type',
+                    'manufacturer',
+                    'decor_code',
+                    'thickness',
+                    'board_length',
+                    'board_width',
+                ],
+                name='unique_material_variant',
+                violation_error_message='Този материал вече съществува.',
+            ),
+        ]
+
+
 class Service(models.Model):
     name = models.CharField(max_length=100, unique=True)
     DRAWING_CHOICES = [

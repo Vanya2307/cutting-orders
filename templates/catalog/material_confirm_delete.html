@@ -25,11 +25,20 @@
 
             <form method="post">
                 {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <button type="submit" class="btn btn-danger">
-                        Изтрий материала
-                    </button>
+                    {% if not form.non_field_errors %}
+                        <button type="submit" class="btn btn-danger">
+                            Изтрий материала
+                        </button>
+                    {% endif %}
 
                     <a
                         class="btn btn-outline-secondary"

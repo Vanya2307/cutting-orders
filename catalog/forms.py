@@ -1,6 +1,17 @@
 from django import forms
 from .models import Material
 
+
+class ThicknessInput(forms.NumberInput):
+    def format_value(self, value):
+        value = super().format_value(value)
+
+        if value is not None:
+            return value.removesuffix('.0')
+
+        return value
+
+    
 class MaterialForm(forms.ModelForm):
     class Meta:
         model = Material
@@ -32,7 +43,8 @@ class MaterialForm(forms.ModelForm):
             ),
             'decor_name': forms.TextInput(
                 attrs={'placeholder': 'Например: Кашмир Гланц'}
-            )
+            ),
+            'thickness': ThicknessInput(),
         }
 
         help_texts = {
@@ -72,3 +84,5 @@ class MaterialForm(forms.ModelForm):
 
         self.fields['material_type'].choices = [('', 'Изберете материал…'), *Material.TYPE_CHOICES,]
         self.fields['manufacturer'].choices = [('', 'Изберете производител…'),*Material.MANUFACTURER_CHOICES,]
+
+
