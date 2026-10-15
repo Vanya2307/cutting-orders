@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service }} | Услуги{% endblock %}
+
+{% block content %}
+    <div class="mb-3">
+        <a class="small" href="{% url 'catalog:service-list' %}">&larr; Всички услуги</a>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <h1 class="page-title">{{ service }}</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-accent" href="{% url 'catalog:service-update' service.pk %}">Редактирай</a>
+            <a class="btn btn-outline-danger" href="{% url 'catalog:service-delete' service.pk %}">Изтрий</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <dl class="row g-0 mb-0 detail-list">
+                <dt class="col-sm-4">Наименование</dt>
+                <dd class="col-sm-8">{{ service.name }}</dd>
+
+                <dt class="col-sm-4">Изискване за чертеж</dt>
+                <dd class="col-sm-8">
+                    {% if service.drawing_requirement == 'REQUIRED' %}
+                        <span class="badge text-bg-danger">{{ service.get_drawing_requirement_display }}</span>
+                    {% elif service.drawing_requirement == 'RECOMMENDED' %}
+                        <span class="badge text-bg-warning">{{ service.get_drawing_requirement_display }}</span>
+                    {% else %}
+                        <span class="badge text-bg-secondary">{{ service.get_drawing_requirement_display }}</span>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4">Използва се в</dt>
+                <dd class="col-sm-8">{{ service.detail_set.count }} детайла</dd>
+            </dl>
+        </div>
+    </div>
+{% endblock %}

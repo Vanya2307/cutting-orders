@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Услуги | Онлайн заявки{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <h1 class="page-title">Услуги</h1>
+        <a class="btn btn-accent" href="{% url 'catalog:service-create' %}">+ Добави услуга</a>
+    </div>
+
+    {% if services %}
+        <div class="table-responsive">
+            <table class="table table-drawing align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Услуга</th>
+                        <th>Чертеж</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'catalog:service-detail' service.pk %}">{{ service.name }}</a>
+                            </td>
+                            <td>
+                                {% if service.drawing_requirement == 'REQUIRED' %}
+                                    <span class="badge text-bg-danger">{{ service.get_drawing_requirement_display }}</span>
+                                {% elif service.drawing_requirement == 'RECOMMENDED' %}
+                                    <span class="badge text-bg-warning">{{ service.get_drawing_requirement_display }}</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">{{ service.get_drawing_requirement_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body py-5 text-center">
+                <p class="fs-5 mb-2">Все още няма въведени услуги.</p>
+                <p class="text-secondary mb-4">
+                    Добавете услугите, които клиентите могат да избират към детайлите.
+                </p>
+                <a class="btn btn-outline-accent" href="{% url 'catalog:service-create' %}">+ Добави услуга</a>
+            </div>
+        </div>
+    {% endif %}
+    
+{% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Material
+from .models import Material, Service
 
 
 class ThicknessInput(forms.NumberInput):
@@ -84,5 +84,44 @@ class MaterialForm(forms.ModelForm):
 
         self.fields['material_type'].choices = [('', 'Изберете материал…'), *Material.TYPE_CHOICES,]
         self.fields['manufacturer'].choices = [('', 'Изберете производител…'),*Material.MANUFACTURER_CHOICES,]
+
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'drawing_requirement']
+
+        labels = {
+            'name': 'Наименование на услугата',
+            'drawing_requirement': 'Изискване за чертеж',
+        }
+
+        widgets = {
+            'name': forms.TextInput(
+                attrs={'placeholder': 'Например: Отвори за панти'}
+            ),
+            'drawing_requirement': forms.RadioSelect(),
+        }
+
+        help_texts = {
+            'drawing_requirement': 'Посочете дали клиентът трябва да прикачи чертеж за тази услуга.',
+        }
+
+        error_messages = {
+            'name': {
+                'required': 'Въведете име на услугата.',
+                'unique': 'Услуга с това име вече съществува.',
+                'max_length': 'Името може да е до 100 символа',
+            },
+            'drawing_requirement': {
+                'required': 'Изберете опция за чертеж.',
+            },
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['drawing_requirement'].choices = Service.DRAWING_CHOICES
+
 
 

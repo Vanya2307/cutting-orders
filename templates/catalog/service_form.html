@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Редакция на услуга{% else %}Нова услуга{% endif %} | Услуги{% endblock %}
+
+{% block content %}
+    <div class="mb-3">
+        <a class="small" href="{% url 'catalog:service-list' %}">&larr; Всички услуги</a>
+    </div>
+
+    <h1 class="page-title">
+        {% if object %}Редакция: {{ object }}{% else %}Нова услуга{% endif %}
+    </h1>
+
+    <form method="post" class="drawing-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row g-4">
+            <div class="col-md-8">
+                <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <fieldset class="col-12">
+                <legend class="form-label fs-6 float-none">
+                    <label class="form-label d-block">{{ form.drawing_requirement.label }}</label>
+                </legend>
+                {% for radio in form.drawing_requirement %}
+                    <div class="form-check">
+                        {{ radio.tag }}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                {% endfor %}
+                {% if form.drawing_requirement.help_text %}
+                    <div class="form-text">{{ form.drawing_requirement.help_text }}</div>
+                {% endif %}
+                {% for error in form.drawing_requirement.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </fieldset>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-accent">Запази</button>
+            {% if object %}
+                <a class="btn btn-outline-secondary" href="{% url 'catalog:service-detail' object.pk %}">Откажи</a>
+            {% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'catalog:service-list' %}">Откажи</a>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}
