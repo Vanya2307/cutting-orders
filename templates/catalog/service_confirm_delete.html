@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Изтриване на услуга | Услуги{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Изтриване на услуга</h1>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <p class="fs-5">
+                Сигурни ли сте, че искате да изтриете тази услуга?
+            </p>
+
+            <p class="fw-semibold mb-1">{{ object }}</p>
+
+            <p class="text-secondary">
+                {{ object.get_drawing_requirement_display }}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    {% if not form.non_field_errors %}
+                        <button type="submit" class="btn btn-danger">
+                            Изтрий услугата
+                        </button>
+                    {% endif %}
+
+                    <a
+                        class="btn btn-outline-secondary"
+                        href="{% url 'catalog:service-detail' object.pk %}"
+                    >
+                        {% if form.non_field_errors %}
+                            Назад към услугата
+                        {% else %}
+                            Откажи
+                        {% endif %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

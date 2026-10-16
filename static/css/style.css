@@ -301,3 +301,30 @@ button:focus-visible {
 .drawing-form .form-check {
     padding-left: 0;
 }
+
+/* Обозначения за чертеж */
+
+.badge-drawing {
+    padding: 0.4em 0.7em;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.drawing-required {
+    background-color: var(--accent-dark);
+    color: #ffffff;
+    border-color: var(--accent-dark);
+}
+
+.drawing-recommended {
+    background-color: #eadccd;
+    color: #70451f;
+    border-color: #ccb397;
+}
+
+.drawing-none {
+    background-color: #e0e4e1;
+    color: #46514b;
+    border-color: #bbc5be;
+}

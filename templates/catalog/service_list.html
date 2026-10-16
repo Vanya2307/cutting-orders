@@ -25,11 +25,11 @@
                             </td>
                             <td>
                                 {% if service.drawing_requirement == 'REQUIRED' %}
-                                    <span class="badge text-bg-danger">{{ service.get_drawing_requirement_display }}</span>
+                                    <span class="badge badge-drawing drawing-required">{{ service.get_drawing_requirement_display }}</span>
                                 {% elif service.drawing_requirement == 'RECOMMENDED' %}
-                                    <span class="badge text-bg-warning">{{ service.get_drawing_requirement_display }}</span>
+                                    <span class="badge badge-drawing drawing-recommended">{{ service.get_drawing_requirement_display }}</span>
                                 {% else %}
-                                    <span class="badge text-bg-secondary">{{ service.get_drawing_requirement_display }}</span>
+                                    <span class="badge badge-drawing drawing-none">{{ service.get_drawing_requirement_display }}</span>
                                 {% endif %}
                             </td>
                         </tr>

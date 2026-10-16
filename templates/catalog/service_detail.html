@@ -24,16 +24,20 @@
                 <dt class="col-sm-4">Изискване за чертеж</dt>
                 <dd class="col-sm-8">
                     {% if service.drawing_requirement == 'REQUIRED' %}
-                        <span class="badge text-bg-danger">{{ service.get_drawing_requirement_display }}</span>
+                        <span class="badge badge-drawing drawing-required">{{ service.get_drawing_requirement_display }}</span>
                     {% elif service.drawing_requirement == 'RECOMMENDED' %}
-                        <span class="badge text-bg-warning">{{ service.get_drawing_requirement_display }}</span>
+                        <span class="badge badge-drawing drawing-recommended">{{ service.get_drawing_requirement_display }}</span>
                     {% else %}
-                        <span class="badge text-bg-secondary">{{ service.get_drawing_requirement_display }}</span>
+                        <span class="badge badge-drawing drawing-none">{{ service.get_drawing_requirement_display }}</span>
                     {% endif %}
                 </dd>
 
                 <dt class="col-sm-4">Използва се в</dt>
-                <dd class="col-sm-8">{{ service.detail_set.count }} детайла</dd>
+                {% with count=service.detail_set.count %}
+                    <dd class="col-sm-8">
+                        {{ count }} детайл{{ count|pluralize:",а" }}
+                    </dd>
+                {% endwith %}
             </dl>
         </div>
     </div>

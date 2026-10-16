@@ -44,7 +44,11 @@
                         class="btn btn-outline-secondary"
                         href="{% url 'catalog:material-detail' object.pk %}"
                     >
-                        Откажи
+                        {% if form.non_field_errors %}
+                            Назад към материала
+                        {% else %}
+                            Откажи
+                        {% endif %}
                     </a>
                 </div>
             </form>
