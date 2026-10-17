@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Поръчка {% if order.number %}{{ order.number }}{% else %}#{{ order.pk }}{% endif %} | Онлайн заявки{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-4 mb-4">
+        <h1 class="page-title">
+            Поръчка {% if order.number %}{{ order.number }}{% else %}#{{ order.pk }}{% endif %}
+        </h1>
+
+        <dl class="title-block mb-0">
+            <dt>Клиент</dt>
+            <dd>{{ order.contact_name }}</dd>
+
+            <dt>Телефон</dt>
+            <dd>{{ order.contact_phone }}</dd>
+
+            {% if order.contact_company %}
+                <dt>Фирма</dt>
+                <dd>{{ order.contact_company }}</dd>
+            {% endif %}
+
+            <dt>Създадена</dt>
+            <dd>{{ order.created_at|date:"d.m.Y H:i" }}</dd>
+
+            <dt>Статус</dt>
+            <dd>{{ order.get_status_display }}</dd>
+        </dl>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <h2 class="h4 mb-0">Детайли</h2>
+        {# Replace "#" with the add-detail URL once that page exists #}
+
+        {% if order.status == 'DRAFT' %}
+            <a class="btn btn-accent" href="#">+ Добави детайл</a>
+        {% endif %}
+    </div>
+
+    {% if order.details.all %}
+        <div class="table-responsive">
+            <table class="table table-drawing align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="num">№</th>
+                        <th>Материал</th>
+                        <th>Наименование</th>
+                        <th class="num">L, мм</th>
+                        <th class="num">W, мм</th>
+                        <th class="num">Бр.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in order.details.all %}
+                        <tr>
+                            <td class="num">{{ forloop.counter }}</td>
+                            <td>{{ detail.material }}</td>
+                            <td>{{ detail.name|default:"-" }}</td>
+                            <td class="num">{{ detail.length }}</td>
+                            <td class="num">{{ detail.width }}</td>
+                            <td class="num">{{ detail.quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body py-5 text-center">
+                <p class="fs-5 mb-2">Все още няма добавени детайли.</p>
+                <p class="text-secondary mb-0">
+                    Добавете първия детайл: материал, размери, количество, кантове и ако има допълнителни обработки.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

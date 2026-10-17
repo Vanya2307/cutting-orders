@@ -328,3 +328,21 @@ button:focus-visible {
     color: #46514b;
     border-color: #bbc5be;
 }
+
+/* -- Поле с фиксиран префикс (+359) -- */
+
+.drawing-form .input-group {
+    flex-wrap: nowrap;
+}
+
+.drawing-form .input-group > input {
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+}
+
+.drawing-form .input-group-text {
+    background-color: var(--paper-card);
+    border-color: var(--line);
+    color: var(--ink-muted);
+}
