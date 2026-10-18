@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Редакция на детайл{% else %}Нов детайл{% endif %} | Поръчка #{{ order.pk }}
+{% endblock %}
+
+{% block content %}
+    <div class="mb-3">
+        <a class="small" href="{% url 'orders:order-detail' order.pk %}">
+            &larr; Към поръчката
+        </a>
+    </div>
+
+    <h1 class="page-title">
+        {% if object %}Редакция на детайл{% else %}Нов детайл{% endif %}
+    </h1>
+
+    <p class="text-secondary mb-3">
+        Поръчка #{{ order.pk }} &middot; {{ order.contact_name }}
+    </p>
+
+    <form method="post" class="drawing-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# Материал и размери #}
+        <fieldset class="mb-4">
+            <legend class="h5 float-none mb-3">Материал и размери</legend>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="{{ form.material.id_for_label }}">
+                        {{ form.material.label }}
+                    </label>
+                    {{ form.material }}
+                    {% for error in form.material.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="{{ form.name.id_for_label }}">
+                        {{ form.name.label }}
+                    </label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="{{ form.length.id_for_label }}">
+                        {{ form.length.label }}
+                    </label>
+                    {{ form.length }}
+                    {% for error in form.length.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="{{ form.width.id_for_label }}">
+                        {{ form.width.label }}
+                    </label>
+                    {{ form.width }}
+                    {% for error in form.width.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="{{ form.quantity.id_for_label }}">
+                        {{ form.quantity.label }}
+                    </label>
+                    {{ form.quantity }}
+                    {% for error in form.quantity.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <fieldset class="col-12 mb-0">
+                    <legend class="form-label fs-6 float-none mb-2">
+                        {{ form.grain_direction.label }}
+                    </legend>
+
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for radio in form.grain_direction %}
+                            <div class="form-check mb-0">
+                                {{ radio.tag }}
+                                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                    {{ radio.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-text">
+                        При материал без фладер посоката се задава автоматично.
+                    </div>
+                    {% for error in form.grain_direction.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </fieldset>
+            </div>
+        </fieldset>
+
+        {# Кантове #}
+        <fieldset class="mb-4">
+            <legend class="h5 float-none mb-3">Кантове</legend>
+
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label" for="{{ form.edge_l_top.id_for_label }}">
+                        {{ form.edge_l_top.label }}
+                    </label>
+                    {{ form.edge_l_top }}
+                    {% for error in form.edge_l_top.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label" for="{{ form.edge_l_bottom.id_for_label }}">
+                        {{ form.edge_l_bottom.label }}
+                    </label>
+                    {{ form.edge_l_bottom }}
+                    {% for error in form.edge_l_bottom.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label" for="{{ form.edge_w_left.id_for_label }}">
+                        {{ form.edge_w_left.label }}
+                    </label>
+                    {{ form.edge_w_left }}
+                    {% for error in form.edge_w_left.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label" for="{{ form.edge_w_right.id_for_label }}">
+                        {{ form.edge_w_right.label }}
+                    </label>
+                    {{ form.edge_w_right }}
+                    {% for error in form.edge_w_right.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </fieldset>
+
+        {# Обработки и уточнение #}
+        <fieldset class="mb-4">
+            <legend class="h5 float-none mb-3">{{ form.services.label }}</legend>
+
+            <div class="d-flex flex-wrap gap-3">
+                {% for checkbox in form.services %}
+                    <div class="form-check mb-0">
+                        {{ checkbox.tag }}
+                        <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                            {{ checkbox.choice_label }}
+                        </label>
+                    </div>
+                {% empty %}
+                    <div class="text-secondary small">
+                        Все още няма въведени обработки.
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if form.services.help_text %}
+                <div class="form-text" id="{{ form.services.auto_id }}_helptext">
+                    {{ form.services.help_text }}
+                </div>
+            {% endif %}
+            {% for error in form.services.errors %}
+                <div class="field-error">{{ error }}</div>
+            {% endfor %}
+
+            <div class="mt-3">
+                <label class="form-label" for="{{ form.processing.id_for_label }}">
+                    {{ form.processing.label }}
+                </label>
+                {{ form.processing }}
+                {% if form.processing.help_text %}
+                    <div class="form-text" id="{{ form.processing.auto_id }}_helptext">
+                        {{ form.processing.help_text }}
+                    </div>
+                {% endif %}
+                {% for error in form.processing.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        {# Евросглобки #}
+        <fieldset class="mb-4">
+            <legend class="h5 float-none mb-3">Евросглобки</legend>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="{{ form.euro_joint_left.id_for_label }}">
+                        {{ form.euro_joint_left.label }}
+                    </label>
+                    {{ form.euro_joint_left }}
+                    {% for error in form.euro_joint_left.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="{{ form.euro_joint_right.id_for_label }}">
+                        {{ form.euro_joint_right.label }}
+                    </label>
+                    {{ form.euro_joint_right }}
+                    {% for error in form.euro_joint_right.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-text">
+                Стандартна евросглобка се прави само при плот с ширина 600 мм.
+            </div>
+        </fieldset>
+
+        {# Друго #}
+        <div>
+            <label class="h5 d-block mb-3" for="{{ form.other.id_for_label }}">
+                {{ form.other.label }}
+            </label>
+            {{ form.other }}
+            {% if form.other.help_text %}
+                <div class="form-text" id="{{ form.other.auto_id }}_helptext">
+                    {{ form.other.help_text }}
+                </div>
+            {% endif %}
+            {% for error in form.other.errors %}
+                <div class="field-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="submit" class="btn btn-accent">
+                {% if object %}Запази промените{% else %}Запази детайла{% endif %}
+            </button>
+            <a class="btn btn-outline-secondary" href="{% url 'orders:order-detail' order.pk %}">
+                Откажи
+            </a>
+        </div>
+    </form>
+{% endblock %}

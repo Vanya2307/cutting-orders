@@ -1,8 +1,9 @@
-from django.views.generic import FormView, DetailView
-from .forms import ClientForm
+from django.views.generic import CreateView, FormView, DetailView, UpdateView, DeleteView
+from .forms import ClientForm, DetailForm
 
-from .models import Order
-from django.shortcuts import redirect
+from .models import Order, Detail
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse
 
 from django.db import transaction
 
@@ -43,5 +44,78 @@ class OrderDetailView(DetailView):
         
         return super().get_queryset().filter(pk__in=order_ids)
 
+class DraftDetailMixin:
+    def get_queryset(self):
+        order_ids = self.request.session.get('order_ids', [])
+
+        return super().get_queryset().filter(
+            order_id=self.kwargs['order_pk'],
+            order_id__in=order_ids,
+            order__status='DRAFT',
+        )
+
+class DetailCreateView(CreateView):
+    model = Detail
+    form_class = DetailForm
+    template_name = 'orders/detail_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.order = get_object_or_404(
+            Order,
+            pk=kwargs['order_pk'],
+            pk__in=request.session.get('order_ids', []),
+            status='DRAFT',
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.order = self.order
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            'orders:order-detail',
+            kwargs={'pk': self.order.pk},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.order
+
+        return context
+
+class DetailUpdateView(DraftDetailMixin, UpdateView):
+    model = Detail
+    form_class = DetailForm
+    template_name = 'orders/detail_form.html'
 
 
+    def get_success_url(self):
+        return reverse(
+            'orders:order-detail',
+            kwargs={'pk': self.object.order_id},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.object.order
+
+        return context
+
+
+class DetailDeleteView(DraftDetailMixin, DeleteView):
+    model = Detail
+    template_name = 'orders/detail_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse(
+            'orders:order-detail',
+            kwargs={'pk': self.object.order_id},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.object.order
+
+        return context

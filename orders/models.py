@@ -2,7 +2,8 @@ from decimal import Decimal
 
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.core.exceptions import ValidationError
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
@@ -51,11 +52,11 @@ class Detail(models.Model):
         ('ANY', 'Без значение'),
     ]
     THICKNESS_CHOICES = [
-        (Decimal('0'), 'Без кант'),
-        (Decimal('0.5'), '0.5мм'),
-        (Decimal('0.8'), '0.8мм'),
-        (Decimal('1'), '1мм'),
-        (Decimal('2'), '2мм'),
+        (Decimal('0.0'), 'Без кант'),
+        (Decimal('0.5'), '0.5'),
+        (Decimal('0.8'), '0.8'),
+        (Decimal('1.0'), '1'),
+        (Decimal('2.0'), '2'),
     ]
     JOINT_CHOICES = [
         ('NO_JOINT', 'Без сглобка'),
@@ -103,15 +104,18 @@ class Detail(models.Model):
         if not self.material_id:
             return
 
+
+        errors = {}
+
         if not self.material.has_grain:
             self.grain_direction = 'ANY'
         elif not self.grain_direction:
-            raise ValidationError({
-                'grain_direction': 'Моля, изберете посока на фладера или "Без значение".',
-            })
+            errors['grain_direction'] = (
+                'Моля, изберете посока на фладера или "Без значение".'
+            )
         
 
-        errors = {}
+        
 
         for field_name in ('euro_joint_left', 'euro_joint_right'):
             joint = getattr(self, field_name)
@@ -124,24 +128,18 @@ class Detail(models.Model):
                         'Стандартната евросглобка е за ширина 600 мм. '
                         'За друга ширина, моля, свържете се с нас.'
                     )
-        if errors:
-            raise ValidationError(errors)
-
-        
-
-        if self.length is None or self.width is None:
-            return
+       
 
         usable_length, usable_width = self.material.usable_size()
 
         fits_lengthwise = (
-            self.length <= usable_length
-            and self.width <= usable_width
+            (self.length is None or self.length <= usable_length)
+            and (self.width is None or self.width <= usable_width)
         )
 
         fits_rotated = (
-            self.width <= usable_length
-            and self.length <= usable_width
+            (self.width is None or self.width <= usable_length)
+            and (self.length is None or self.length <= usable_width)
         )
 
         if self.grain_direction == 'L':
@@ -152,11 +150,14 @@ class Detail(models.Model):
             fits = fits_lengthwise or fits_rotated
 
         if not fits:
-            raise ValidationError(
-                f"Детайлът не се побира в плочата при избраната посока. "
-                f"Чист размер след окрайчване: "
-                f"{usable_length} × {usable_width} мм."
+            errors[NON_FIELD_ERRORS] = (
+                'Детайлът не се побира в плочата при избраната посока. '
+                'Чист размер след окрайчване: '
+                f'{usable_length} × {usable_width} мм.'
             )
+
+        if errors:
+            raise ValidationError(errors)
 
 
 
