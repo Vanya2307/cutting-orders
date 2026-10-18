@@ -1,7 +1,7 @@
 import re
 
 from django import forms
-from .models import Client
+from .models import Client, Detail
 
 
 class ClientForm(forms.ModelForm):
@@ -102,4 +102,114 @@ class ClientForm(forms.ModelForm):
             self.matching_client = client
 
         return cleaned_data
+
+
+
+
+class DetailForm(forms.ModelForm):
+    class Meta:
+        model = Detail
+
+        fields = [
+            'material',
+            'name',
+            'length',
+            'width',
+            'quantity',
+            'grain_direction',
+            'edge_l_top',
+            'edge_l_bottom',
+            'edge_w_left',
+            'edge_w_right',
+            'euro_joint_left',
+            'euro_joint_right',
+            'services',
+            'other',
+            'processing',
+        ]
+
+        labels = {
+            'material': 'Материал',
+            'name': 'Наименование на детайла (по желание)',
+            'length': 'Дължина L, мм',
+            'width': 'Ширина W, мм',
+            'quantity': 'Количество, бр.',
+            'grain_direction': 'Посока на фладера',
+            'edge_l_top': 'Кант L горе, мм',
+            'edge_l_bottom': 'Кант L долу, мм',
+            'edge_w_left': 'Кант W ляво, мм',
+            'edge_w_right': 'Кант W дясно, мм',
+            'euro_joint_left': 'Евросглобка, лява',
+            'euro_joint_right': 'Евросглобка, дясна',
+            'services': 'Обработки',
+            'processing': 'Уточнение към обработките',
+            'other': 'Друго',
+        }
+
+
+        help_texts = {
+            'services': 'Изберете необходимите обработки.',
+            'processing': 'Например: разстояние между отворите за панти.',
+            'other': 'Например: кант в различен цвят, сдвоени детайли.',
+        }
+
+
+        widgets = {
+            'name': forms.TextInput(
+                attrs={'placeholder': 'Например: Страница, Дъно, Врата...'}
+            ),
+            'services': forms.CheckboxSelectMultiple(),
+            'processing': forms.Textarea(
+                attrs={'rows': 2}
+            ),
+            'other': forms.Textarea(
+                attrs={'rows': 2}
+            ),
+            'grain_direction': forms.RadioSelect(),
+        }
+
+        error_messages = {
+            'material': {
+                'required': 'Моля, изберете материал.',
+                'invalid_choice': 'Моля, изберете материал от списъка.',
+            },
+            'name': {
+                'max_length': 'Наименованието може да е до 100 символа.',
+            },
+            'length': {
+                'required': 'Моля, въведете дължина.',
+                'invalid': 'Моля, въведете цяло число.',
+                'min_value': 'Минималната дължина е 18 мм.',
+            },
+            'width': {
+                'required': 'Моля, въведете ширина.',
+                'invalid': 'Моля, въведете цяло число.',
+                'min_value': 'Минималната ширина е 18 мм.',
+            },
+            'quantity': {
+                'required': 'Моля, въведете количество.',
+                'invalid': 'Моля, въведете цяло число.',
+                'min_value': 'Количеството трябва да бъде поне 1.',
+            },
+            'grain_direction': {
+                'required': 'Моля, изберете посока на фладера.',
+            },
+            'processing': {
+                'max_length': 'Уточнението може да е до 255 символа.',
+            },
+            'other': {
+                'max_length': 'Текстът може да е до 255 символа.',
+            },
+        }
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['grain_direction'].choices = Detail.DIRECTION_CHOICES
+        self.fields['material'].empty_label = 'Изберете материал'
+        self.fields['grain_direction'].required = False
+
+
+
 

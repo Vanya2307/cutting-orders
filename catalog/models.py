@@ -68,6 +68,18 @@ class Material(models.Model):
         if errors:
             raise ValidationError(errors)
 
+    def usable_size(self):
+        length = self.board_length
+        width = self.board_width
+
+        if self.material_type in ('LPDCH', 'MDF', 'HDF'):
+            length -= 30
+            width -= 30
+        elif self.material_type in ('TOP', 'BACK'):
+            length -= 20
+
+        return length, width
+
 
     class Meta:
         ordering = ['material_type', 'decor_code']

@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
@@ -89,10 +90,73 @@ class Detail(models.Model):
     other = models.CharField(max_length=255, blank=True)
     processing = models.CharField(max_length=255, blank=True)
 
+
     def __str__(self):
         if self.name:
             return f"{self.name} - {self.length}/{self.width} - {self.quantity}"
         return f"{self.length}/{self.width} - {self.quantity}"
+
+
+    def clean(self):
+        super().clean()
+
+        if not self.material_id:
+            return
+
+        if not self.material.has_grain:
+            self.grain_direction = 'ANY'
+        elif not self.grain_direction:
+            raise ValidationError({
+                'grain_direction': 'Моля, изберете посока на фладера или "Без значение".',
+            })
+        
+
+        errors = {}
+
+        for field_name in ('euro_joint_left', 'euro_joint_right'):
+            joint = getattr(self, field_name)
+
+            if joint != 'NO_JOINT':
+                if self.material.material_type != 'TOP':
+                    errors[field_name] = ('Евросглобката е възможна само при плот.')
+                elif self.width is not None and self.width != 600:
+                    errors['width'] = (
+                        'Стандартната евросглобка е за ширина 600 мм. '
+                        'За друга ширина, моля, свържете се с нас.'
+                    )
+        if errors:
+            raise ValidationError(errors)
+
+        
+
+        if self.length is None or self.width is None:
+            return
+
+        usable_length, usable_width = self.material.usable_size()
+
+        fits_lengthwise = (
+            self.length <= usable_length
+            and self.width <= usable_width
+        )
+
+        fits_rotated = (
+            self.width <= usable_length
+            and self.length <= usable_width
+        )
+
+        if self.grain_direction == 'L':
+            fits = fits_lengthwise
+        elif self.grain_direction == 'W':
+            fits = fits_rotated
+        else:
+            fits = fits_lengthwise or fits_rotated
+
+        if not fits:
+            raise ValidationError(
+                f"Детайлът не се побира в плочата при избраната посока. "
+                f"Чист размер след окрайчване: "
+                f"{usable_length} × {usable_width} мм."
+            )
 
 
 
