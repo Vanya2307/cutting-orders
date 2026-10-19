@@ -1,7 +1,12 @@
-from django.views.generic import CreateView, FormView, DetailView, UpdateView, DeleteView
-from .forms import ClientForm, DetailForm
+from pathlib import Path
 
-from .models import Order, Detail
+from django.http import FileResponse
+from django.views import View
+
+from django.views.generic import CreateView, FormView, DetailView, UpdateView, DeleteView
+from .forms import ClientForm, DetailForm, OrderDrawingForm
+
+from .models import Order, Detail, OrderDrawing
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 
@@ -44,6 +49,17 @@ class OrderDetailView(DetailView):
         
         return super().get_queryset().filter(pk__in=order_ids)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        ordered_details = (
+            self.object.details
+            .select_related('material')
+            .order_by('material__decor_code', 'material_id', 'pk')
+        )
+        context['details'] = ordered_details
+        return context
+
 class DraftDetailMixin:
     def get_queryset(self):
         order_ids = self.request.session.get('order_ids', [])
@@ -54,11 +70,8 @@ class DraftDetailMixin:
             order__status='DRAFT',
         )
 
-class DetailCreateView(CreateView):
-    model = Detail
-    form_class = DetailForm
-    template_name = 'orders/detail_form.html'
 
+class DraftOrderMixin:
     def dispatch(self, request, *args, **kwargs):
         self.order = get_object_or_404(
             Order,
@@ -67,6 +80,15 @@ class DetailCreateView(CreateView):
             status='DRAFT',
         )
         return super().dispatch(request, *args, **kwargs)
+
+
+
+
+class DetailCreateView(DraftOrderMixin, CreateView):
+    model = Detail
+    form_class = DetailForm
+    template_name = 'orders/detail_form.html'
+
 
     def form_valid(self, form):
         form.instance.order = self.order
@@ -118,4 +140,66 @@ class DetailDeleteView(DraftDetailMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['order'] = self.object.order
 
+        return context
+
+
+class OrderDrawingCreateView(DraftOrderMixin, CreateView):
+    model = OrderDrawing
+    form_class = OrderDrawingForm
+    template_name = 'orders/order_drawing_form.html'
+
+
+    def form_valid(self, form):
+        form.instance.order = self.order
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            'orders:order-detail',
+            kwargs={'pk': self.order.pk},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.order
+
+        return context
+
+
+class OrderDrawingDownloadView(View):
+    def get(self, request, order_pk, pk):
+        drawing = get_object_or_404(
+            OrderDrawing,
+            pk=pk,
+            order_id=order_pk,
+            order_id__in=request.session.get('order_ids', []),
+        )
+
+        return FileResponse(
+            drawing.file.open('rb'),
+            as_attachment=False,
+            filename=Path(drawing.file.name).name,
+        )
+
+
+
+class OrderDrawingDeleteView(DraftDetailMixin, DeleteView):
+    model = OrderDrawing
+    template_name = 'orders/order_drawing_confirm_delete.html'
+
+    def form_valid(self, form):
+        self.object.file.delete(save=False)
+        return super().form_valid(form)
+
+
+    def get_success_url(self):
+        return reverse(
+            'orders:order-detail',
+            kwargs={'pk': self.object.order_id},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.object.order
         return context

@@ -42,60 +42,71 @@
         {% endif %}
     </div>
 
-    {% if order.details.all %}
-        <div class="table-responsive">
-            <table class="table table-drawing align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th class="num">№</th>
-                        <th>Материал</th>
-                        <th>Наименование</th>
-                        <th class="num">L, мм</th>
-                        <th class="num">W, мм</th>
-                        <th class="num">Бр.</th>
-                        {% if order.status == 'DRAFT' %}
-                            <th class="text-end pe-3">Действия</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for detail in order.details.all %}
-                        <tr>
-                            <td class="num">{{ forloop.counter }}</td>
-                            <td>{{ detail.material }}</td>
-                            <td>{{ detail.name|default:"-" }}</td>
-                            <td class="num">{{ detail.length }}</td>
-                            <td class="num">{{ detail.width }}</td>
-                            <td class="num">{{ detail.quantity }}</td>
-                            {% if order.status == 'DRAFT' %}
-                                <td class="text-end text-nowrap ps-4 pe-3">
-                                    <a
-                                        class="btn btn-sm btn-outline-accent"
-                                        href="{% url 'orders:detail-update' order_pk=order.pk pk=detail.pk %}"
-                                    >
-                                        Редактирай
-                                    </a>
-                                    <a
-                                        class="btn btn-sm btn-outline-danger ms-2"
-                                        href="{% url 'orders:detail-delete' order_pk=order.pk pk=detail.pk %}"
-                                    >
-                                        Изтрий
-                                    </a>
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+
+        {% if details %}
+        {% regroup details by material as material_groups %}
+
+        {% for group in material_groups %}
+            <div class="mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+                    <h3 class="h6 mb-0">
+                        {{ group.grouper }}
+                        <span class="text-secondary fw-normal">
+                            &middot; {{ group.grouper.get_material_type_display }}
+                            &middot; {{ group.grouper.thickness|floatformat:"-1" }} мм
+                        </span>
+                    </h3>
+                    <span class="small text-secondary">
+                        {{ group.list|length }} ред{{ group.list|length|pluralize:",а" }}
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-drawing align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="num">№</th>
+                                <th>Наименование</th>
+                                <th class="num">L, мм</th>
+                                <th class="num">W, мм</th>
+                                <th class="num">Бр.</th>
+                                {% if order.status == 'DRAFT' %}
+                                    <th class="text-end">Действия</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detail in group.list %}
+                                <tr>
+                                    <td class="num">{{ forloop.counter }}</td>
+                                    <td>{{ detail.name|default:"-" }}</td>
+                                    <td class="num">{{ detail.length }}</td>
+                                    <td class="num">{{ detail.width }}</td>
+                                    <td class="num">{{ detail.quantity }}</td>
+                                    {% if order.status == 'DRAFT' %}
+                                        <td class="text-end text-nowrap">
+                                            
+                                            <a class="btn btn-sm btn-outline-accent" href="{% url 'orders:detail-update' order.pk detail.pk %}">Редактирай</a>
+                                            <a class="btn btn-sm btn-outline-danger" href="{% url 'orders:detail-delete' order.pk detail.pk %}">Изтрий</a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
         <div class="card">
             <div class="card-body py-5 text-center">
                 <p class="fs-5 mb-2">Все още няма добавени детайли.</p>
                 <p class="text-secondary mb-0">
-                    Добавете първия детайл: материал, размери, количество, кантове и ако има допълнителни обработки.
+                    Добавете първия детайл: материал, размери, количество, кантове и обработки.
                 </p>
             </div>
         </div>
     {% endif %}
+
+   
 {% endblock %}

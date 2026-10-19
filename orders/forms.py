@@ -1,7 +1,9 @@
 import re
 
 from django import forms
-from .models import Client, Detail
+from .models import Client, Detail, OrderDrawing
+
+from django.core.validators import FileExtensionValidator
 
 
 class ClientForm(forms.ModelForm):
@@ -211,5 +213,28 @@ class DetailForm(forms.ModelForm):
         self.fields['grain_direction'].required = False
 
 
+class OrderDrawingForm(forms.ModelForm):
+    class Meta:
+        model = OrderDrawing
+        fields = ['file']
+        labels = {'file': 'Чертеж'}
+        widgets = {'file': forms.ClearableFileInput(attrs={'accept': '.pdf, .jpg, .jpeg, .png'})}
+        help_texts = {'file': 'Допустими формати: PDF, JPG и PNG. Максимален размер: 5 MB.'}
+        error_messages = {'file': {'required': 'Моля, изберете файл с чертеж.'}}
+
+    def clean_file(self):
+        file = self.cleaned_data['file']
+
+        validate_extension = FileExtensionValidator(
+            allowed_extensions=['pdf', 'jpg', 'jpeg', 'png'],
+            message='Моля, изберете PDF, JPG или PNG файл.'
+        )
+
+        validate_extension(file)
+
+        if file.size > 5 * 1024 * 1024:
+            raise forms.ValidationError('Размерът на файла не трябва да надвишава 5 MB.')
+
+        return file
 
 
