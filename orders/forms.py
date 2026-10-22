@@ -5,6 +5,8 @@ from .models import Client, Detail, OrderDrawing
 
 from django.core.validators import FileExtensionValidator
 
+from catalog.models import Material
+
 
 class ClientForm(forms.ModelForm):
     class Meta:
@@ -205,12 +207,25 @@ class DetailForm(forms.ModelForm):
         }
 
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, material=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields['grain_direction'].choices = Detail.DIRECTION_CHOICES
         self.fields['material'].empty_label = 'Изберете материал'
         self.fields['grain_direction'].required = False
+        self.selected_material = None
+
+        if material is None and self.instance.material_id:
+            material = self.instance.material
+
+        if material is not None:
+            self.fields['material'].queryset = Material.objects.filter(
+                pk=material.pk
+            )
+            self.initial['material'] = material.pk
+            self.fields['material'].disabled = True
+            self.fields['material'].empty_label = None
+            self.selected_material = material
 
 
 class OrderDrawingForm(forms.ModelForm):

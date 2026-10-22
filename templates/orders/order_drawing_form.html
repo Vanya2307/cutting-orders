@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Качване на чертеж | Поръчка #{{ order.pk }}{% endblock %}
+
+{% block content %}
+    <div class="mb-3">
+        <a class="small" href="{% url 'orders:order-detail' order.pk %}">&larr; Към поръчката</a>
+    </div>
+
+    <h1 class="page-title">Качване на чертеж</h1>
+
+    <p class="text-secondary mb-4">
+        Поръчка #{{ order.pk }} &middot; {{ order.contact_name }}
+    </p>
+
+    {# enctype is required, otherwise the file never reaches Django #}
+    <form method="post" enctype="multipart/form-data" class="drawing-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label" for="{{ form.file.id_for_label }}">
+                    {{ form.file.label }}
+                </label>
+                {{ form.file }}
+                {% if form.file.help_text %}
+                    <div class="form-text">{{ form.file.help_text }}</div>
+                {% endif %}
+                {% for error in form.file.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="small text-secondary mt-3 mb-0">
+            Може да качите снимка на скица на ръка или готов чертеж. Размерите трябва да се виждат ясно.
+        </p>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="submit" class="btn btn-accent">Качи чертежа</button>
+            <a class="btn btn-outline-secondary" href="{% url 'orders:order-detail' order.pk %}">Откажи</a>
+        </div>
+    </form>
+{% endblock %}

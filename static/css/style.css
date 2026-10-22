@@ -346,3 +346,18 @@ button:focus-visible {
     border-color: var(--line);
     color: var(--ink-muted);
 }
+
+/* Заключено поле (избран материал) */
+.drawing-form select:disabled {
+    background-color: var(--paper);
+    color: var(--ink);
+    opacity: 1;
+    cursor: not-allowed;
+    background-image: none;
+    appearance: none;
+}
+
+.drawing-form input[type="file"] {
+    display: block;
+    margin-top: 0.25rem;
+}

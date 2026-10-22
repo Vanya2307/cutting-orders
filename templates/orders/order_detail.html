@@ -35,9 +35,9 @@
         {% if order.status == 'DRAFT' %}
             <a 
                 class="btn btn-accent" 
-                href="{% url 'orders:detail-create' order_pk=order.pk %}"
+                href="{% url 'orders:material-select' order.pk %}"
             >
-                + Добави детайл
+                Избери материал
             </a>
         {% endif %}
     </div>
@@ -56,9 +56,14 @@
                             &middot; {{ group.grouper.thickness|floatformat:"-1" }} мм
                         </span>
                     </h3>
-                    <span class="small text-secondary">
-                        {{ group.list|length }} ред{{ group.list|length|pluralize:",а" }}
-                    </span>
+                    
+
+                    {% if order.status == 'DRAFT' %}
+                        <a class="small text-nowrap"
+                            href="{% url 'orders:detail-create' order.pk %}?material={{ group.grouper.pk }}">
+                            Добави детайл
+                        </a>
+                    {% endif %}
                 </div>
 
                 <div class="table-responsive">
@@ -107,6 +112,64 @@
             </div>
         </div>
     {% endif %}
+
+        {# Чертежи #}
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-5 mb-3">
+        <h2 class="h4 mb-0">Чертежи</h2>
+
+        {% if order.status == 'DRAFT' %}
+            <a
+                class="btn btn-outline-accent"
+                href="{% url 'orders:drawing-create' order_pk=order.pk %}"
+            >
+                Качи чертеж
+            </a>
+        {% endif %}
+    </div>
+
+    {% with drawings=order.drawings.all %}
+        {% if drawings %}
+            <ul class="list-group mb-0">
+                {% for drawing in drawings %}
+                    <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <span class="text-break">
+                            {{ drawing.file.name|cut:"orders/drawings/" }}
+                            <span class="small text-secondary ms-2">
+                                {{ drawing.file.size|filesizeformat }}
+                            </span>
+                        </span>
+
+                        <span class="text-nowrap">
+                            <a
+                                class="btn btn-sm btn-outline-accent"
+                                href="{% url 'orders:drawing-download' order_pk=order.pk pk=drawing.pk %}"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                Отвори
+                            </a>
+
+                            {% if order.status == 'DRAFT' %}
+                                <a
+                                    class="btn btn-sm btn-outline-danger"
+                                    href="{% url 'orders:drawing-delete' order_pk=order.pk pk=drawing.pk %}"
+                                >
+                                    Изтрий
+                                </a>
+                            {% endif %}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-secondary mb-0">
+                Няма качени чертежи.
+                {% if order.status == 'DRAFT' %}
+                    Качете чертеж, ако избраната обработка го изисква.
+                {% endif %}
+            </p>
+        {% endif %}
+    {% endwith %}
 
    
 {% endblock %}

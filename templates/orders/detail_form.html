@@ -40,6 +40,15 @@
                         {{ form.material.label }}
                     </label>
                     {{ form.material }}
+                    {% if form.selected_material %}
+                        <div class="form-text">
+                            {{ form.selected_material.get_material_type_display }}
+                            &middot; {{ form.selected_material.get_manufacturer_display }}
+                            &middot; {{ form.selected_material.thickness|floatformat:"-1" }} мм
+                            &middot; {{ form.selected_material.board_length }} &times; {{ form.selected_material.board_width }} мм
+                            &middot; {{ form.selected_material.has_grain|yesno:"с фладер,без фладер" }}
+                        </div>
+                    {% endif %}
                     {% for error in form.material.errors %}
                         <div class="field-error">{{ error }}</div>
                     {% endfor %}

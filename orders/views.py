@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from django.http import FileResponse
+from django.http import FileResponse, Http404
 from django.views import View
 
-from django.views.generic import CreateView, FormView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, FormView, DetailView, ListView, UpdateView, DeleteView
 from .forms import ClientForm, DetailForm, OrderDrawingForm
 
 from .models import Order, Detail, OrderDrawing
@@ -11,6 +11,9 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 
 from django.db import transaction
+
+from catalog.forms import MaterialFilterForm
+from catalog.models import Material
 
 class OrderCreateView(FormView):
     form_class = ClientForm
@@ -81,8 +84,51 @@ class DraftOrderMixin:
         )
         return super().dispatch(request, *args, **kwargs)
 
+class MaterialSelectView(DraftOrderMixin, ListView):
+    model = Material
+    template_name = 'orders/material_select.html'
+    context_object_name = 'materials'
+    paginate_by = 25
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filter_form = MaterialFilterForm(self.request.GET or None)
+        material_type = self.request.GET.get('material_type')
+        available_materials = queryset
+        if material_type in dict(Material.TYPE_CHOICES):
+            available_materials = available_materials.filter(material_type=material_type)
+
+        manufacturers = set(
+            available_materials
+            .order_by()
+            .values_list('manufacturer', flat=True)
+            .distinct()
+        )
+
+        self.filter_form.fields['manufacturer'].choices = [
+            ('', 'Всички производители'),
+            *[
+                (value, label)
+                for value, label in Material.MANUFACTURER_CHOICES
+                if value in manufacturers
+            ]
+        ]
+        return self.filter_form.filter_queryset(queryset).order_by(
+            'material_type',
+            'manufacturer',
+            'decor_code',
+            'thickness',
+            'pk',
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.order
+        context['filter_form'] = self.filter_form
 
 
+        return context
+    
 
 class DetailCreateView(DraftOrderMixin, CreateView):
     model = Detail
@@ -106,6 +152,19 @@ class DetailCreateView(DraftOrderMixin, CreateView):
         context['order'] = self.order
 
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        try:
+            material_pk = int(self.request.GET.get('material', ''))
+        except (TypeError, ValueError):
+            raise Http404('Невалиден материал.')
+
+        material = get_object_or_404(Material, pk=material_pk)
+        kwargs['material'] = material
+
+        return kwargs
 
 class DetailUpdateView(DraftDetailMixin, UpdateView):
     model = Detail

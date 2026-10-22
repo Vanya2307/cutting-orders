@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    MaterialSelectView,
     OrderCreateView, 
     OrderDetailView, 
     DetailCreateView, 
@@ -22,4 +23,5 @@ urlpatterns = [
     path('<int:order_pk>/drawings/create/', OrderDrawingCreateView.as_view(), name='drawing-create'),
     path('<int:order_pk>/drawings/<int:pk>/download/', OrderDrawingDownloadView.as_view(), name='drawing-download'),
     path('<int:order_pk>/drawings/<int:pk>/delete/', OrderDrawingDeleteView.as_view(), name='drawing-delete'),
+    path('<int:order_pk>/materials/', MaterialSelectView.as_view(), name='material-select'),
 ]

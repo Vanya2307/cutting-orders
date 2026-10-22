@@ -1,6 +1,7 @@
 from django import forms
 from .models import Material, Service
 
+from django.db.models import Q
 
 class ThicknessInput(forms.NumberInput):
     def format_value(self, value):
@@ -124,4 +125,69 @@ class ServiceForm(forms.ModelForm):
         self.fields['drawing_requirement'].choices = Service.DRAWING_CHOICES
 
 
+class MaterialFilterForm(forms.Form):
+    material_type = forms.ChoiceField(
+        label='Тип',
+        choices=[('', 'Всички типове'), *Material.TYPE_CHOICES],
+        required=False,
+    )
 
+    manufacturer = forms.ChoiceField(
+        label='Производител',
+        choices=[('', 'Всички производители'), *Material.MANUFACTURER_CHOICES],
+        required=False,
+        error_messages={
+            'invalid_choice': (
+                'Този произодител няма материали от избраният тип. '
+                'Моле, изберете друг производител или всички производители.'
+            )
+        }
+    )
+
+
+    q = forms.CharField(
+        label='Код или име на декора',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(
+            attrs={'placeholder': 'Например: 5981 или Кашмир'}
+        ),
+    )
+
+    def filter_queryset(self, queryset):
+        if not self.is_bound:
+            return queryset
+
+        if not self.is_valid():
+            return queryset.none()
+
+        material_type = self.cleaned_data.get('material_type')
+        manufacturer = self.cleaned_data.get('manufacturer')
+        q = self.cleaned_data.get('q')
+
+        if material_type:
+            queryset = queryset.filter(material_type=material_type)
+
+        if manufacturer:
+            queryset = queryset.filter(manufacturer=manufacturer)
+
+        if q:
+            search = Q()
+
+            variants = {
+                q,
+                q.lower(),
+                q.upper(),
+                q.capitalize(),
+                q.title(),
+            }
+
+            for variant in variants:
+                search |= (
+                    Q(decor_code__icontains=variant) 
+                    | Q(decor_name__icontains=variant)
+                )
+
+            queryset = queryset.filter(search)
+
+        return queryset

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Изтриване на чертеж | Поръчка #{{ order.pk }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Изтриване на чертеж</h1>
+
+    <p class="text-secondary mb-4">
+        Поръчка #{{ order.pk }} &middot; {{ order.contact_name }}
+    </p>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <p class="fs-5">
+                Сигурни ли сте, че искате да изтриете този чертеж?
+            </p>
+
+            <p class="fw-semibold text-break">
+                {{ object.file.name|cut:"orders/drawings/" }}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button type="submit" class="btn btn-danger">
+                        Изтрий чертежа
+                    </button>
+
+                    <a
+                        class="btn btn-outline-secondary"
+                        href="{% url 'orders:order-detail' order.pk %}"
+                    >
+                        Откажи
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
