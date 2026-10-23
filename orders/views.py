@@ -4,7 +4,7 @@ from django.http import FileResponse, Http404
 from django.views import View
 
 from django.views.generic import CreateView, FormView, DetailView, ListView, UpdateView, DeleteView
-from .forms import ClientForm, DetailForm, OrderDrawingForm
+from .forms import ClientForm, DetailForm, OrderDrawingForm, OrderSubmitForm
 
 from .models import Order, Detail, OrderDrawing
 from django.shortcuts import redirect, get_object_or_404
@@ -58,6 +58,7 @@ class OrderDetailView(DetailView):
         ordered_details = (
             self.object.details
             .select_related('material')
+            .prefetch_related('services')
             .order_by('material__decor_code', 'material_id', 'pk')
         )
         context['details'] = ordered_details
@@ -83,6 +84,36 @@ class DraftOrderMixin:
             status='DRAFT',
         )
         return super().dispatch(request, *args, **kwargs)
+
+
+class OrderSubmitView(DraftOrderMixin, FormView):
+    form_class = OrderSubmitForm
+    template_name = 'orders/order_confirm_submit.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['order'] = self.order
+
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.order
+
+        context['details'] = (
+            self.order.details
+            .select_related('material')
+            .prefetch_related('services')
+            .order_by('material__decor_code', 'material_id', 'pk')
+        )
+
+        context['drawing_recommended'] = (
+            not self.order.drawings.exists()
+            and self.order.details.filter(services__drawing_requirement='RECOMMENDED').exists()
+        )
+        return context
+
+
 
 class MaterialSelectView(DraftOrderMixin, ListView):
     model = Material
@@ -262,3 +293,6 @@ class OrderDrawingDeleteView(DraftDetailMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['order'] = self.object.order
         return context
+
+
+

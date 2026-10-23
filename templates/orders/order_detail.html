@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load order_extras %}
 
 {% block title %}Поръчка {% if order.number %}{{ order.number }}{% else %}#{{ order.pk }}{% endif %} | Онлайн заявки{% endblock %}
 
@@ -67,32 +68,64 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-drawing align-middle mb-0">
+                    <table class="table table-drawing table-compact mb-0">
                         <thead>
                             <tr>
-                                <th class="num">№</th>
-                                <th>Наименование</th>
-                                <th class="num">L, мм</th>
-                                <th class="num">W, мм</th>
-                                <th class="num">Бр.</th>
+                                <th rowspan="2" class="num">№</th>
+                                <th rowspan="2" class="text-center">Фладер</th>
+                                <th rowspan="2">Наименование</th>
+                                <th rowspan="2" class="num">Дължина<br>L, мм</th>
+                                <th rowspan="2" class="num">Ширина<br>W, мм</th>
+                                <th rowspan="2" class="num">Бр.</th>
+                                <th colspan="4" class="text-center">Кантове, мм</th>
+                                <th rowspan="2">Обработка</th>
+                                <th rowspan="2">Друго</th>
                                 {% if order.status == 'DRAFT' %}
-                                    <th class="text-end">Действия</th>
+                                    <th rowspan="2"></th>
                                 {% endif %}
+                            </tr>
+                            <tr>
+                                <th class="text-center">L горе</th>
+                                <th class="text-center">L долу</th>
+                                <th class="text-center">W ляво</th>
+                                <th class="text-center">W дясно</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for detail in group.list %}
                                 <tr>
                                     <td class="num">{{ forloop.counter }}</td>
-                                    <td>{{ detail.name|default:"-" }}</td>
+                                    <td class="text-center">
+                                        {% if detail.material.has_grain and detail.grain_direction != 'ANY' %}{{ detail.grain_direction }}{% endif %}
+                                    </td>
+                                    <td>{{ detail.name }}</td>
                                     <td class="num">{{ detail.length }}</td>
                                     <td class="num">{{ detail.width }}</td>
                                     <td class="num">{{ detail.quantity }}</td>
+                                    <td class="text-center">{{ detail.edge_l_top|edge }}</td>
+                                    <td class="text-center">{{ detail.edge_l_bottom|edge }}</td>
+                                    <td class="text-center">{{ detail.edge_w_left|edge }}</td>
+                                    <td class="text-center">{{ detail.edge_w_right|edge }}</td>
+                                    <td class="cell-text">
+                                        {% if detail.processing %}
+                                            {{ detail.processing }}
+                                        {% else %}
+                                            {% for service in detail.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                        {% endif %}
+
+                                        {% if detail.euro_joint_left != 'NO_JOINT' %}
+                                            <div>Евросглобка лява: {{ detail.get_euro_joint_left_display }}</div>
+                                        {% endif %}
+                                        {% if detail.euro_joint_right != 'NO_JOINT' %}
+                                            <div>Евросглобка дясна: {{ detail.get_euro_joint_right_display }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="cell-text">{{ detail.other }}</td>
                                     {% if order.status == 'DRAFT' %}
                                         <td class="text-end text-nowrap">
-                                            
-                                            <a class="btn btn-sm btn-outline-accent" href="{% url 'orders:detail-update' order.pk detail.pk %}">Редактирай</a>
-                                            <a class="btn btn-sm btn-outline-danger" href="{% url 'orders:detail-delete' order.pk detail.pk %}">Изтрий</a>
+                                            <a href="{% url 'orders:detail-update' order.pk detail.pk %}">Редакция</a>
+                                            <span class="text-secondary">&middot;</span>
+                                            <a class="text-danger" href="{% url 'orders:detail-delete' order.pk detail.pk %}">Изтрий</a>
                                         </td>
                                     {% endif %}
                                 </tr>

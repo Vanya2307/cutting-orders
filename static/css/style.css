@@ -180,7 +180,7 @@ footer small {
     font-weight: 500;
     font-size: 0.85rem;
     letter-spacing: 0.03em;
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 .table-drawing td,
@@ -360,4 +360,25 @@ button:focus-visible {
 .drawing-form input[type="file"] {
     display: block;
     margin-top: 0.25rem;
+}
+
+/* Компактна таблица */
+.table-compact {
+    font-size: 0.875rem;
+}
+
+.table-compact th,
+.table-compact td {
+    padding: 0.3rem 0.5rem;
+    vertical-align: middle;
+}
+
+.table-compact thead th {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.table-compact .cell-text {
+    min-width: 10rem;
+    max-width: 18rem;
 }

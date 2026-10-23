@@ -253,3 +253,34 @@ class OrderDrawingForm(forms.ModelForm):
         return file
 
 
+class OrderSubmitForm(forms.Form):
+    confirm = forms.BooleanField(
+        required=True,
+        label='Проверих всички размери, кантове и обработки.',
+        error_messages={
+            'required': 'Моля, потвърдете, че сте проверили поръчката.',
+        },
+    )
+
+    def __init__(self, *args, order, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.order = order
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if not self.order.details.exists():
+            raise forms.ValidationError('Добавете поне един детайл, преди да изпратите поръчката.')
+
+        drawing_required = self.order.details.filter(services__drawing_requirement='REQUIRED').exists()
+
+        if drawing_required and not self.order.drawings.exists():
+            raise forms.ValidationError(
+                'Избрана е обработка със задължителен чертеж. '
+                'Моля, качете чертеж към поръчката.'
+            )
+
+        return cleaned_data
+
+
+
