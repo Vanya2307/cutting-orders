@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load order_extras %}
+
+{% block title %}Изпращане на поръчка #{{ order.pk }} | Онлайн заявки{% endblock %}
+
+{% block content %}
+    <div class="mb-3">
+        <a class="small" href="{% url 'orders:order-detail' order.pk %}">
+            &larr; Към поръчката
+        </a>
+    </div>
+
+    <h1 class="page-title">Изпращане на поръчка</h1>
+
+    <p class="text-secondary mb-2">
+        Поръчка #{{ order.pk }} &middot; {{ order.contact_name }}
+        &middot; {{ order.contact_phone }}
+    </p>
+
+    <p class="mb-4">
+        Проверете данните преди изпращане.
+        След изпращане поръчката няма да може да бъде редактирана.
+    </p>
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if drawing_recommended %}
+        <div class="alert alert-warning" role="alert">
+            За избраната обработка се препоръчва чертеж.
+            Може да го качите от
+            <a href="{% url 'orders:order-detail' order.pk %}">страницата на поръчката</a>.
+        </div>
+    {% endif %}
+
+    {% if details %}
+        {% regroup details by material as material_groups %}
+
+        {% for group in material_groups %}
+            <div class="mb-4">
+                <h2 class="h6 mb-2">
+                    {{ group.grouper }}
+                    <span class="text-secondary fw-normal">
+                        &middot; {{ group.grouper.get_material_type_display }}
+                        &middot; {{ group.grouper.get_manufacturer_display }}
+                        &middot; {{ group.grouper.thickness|floatformat:"-1" }} мм
+                    </span>
+                </h2>
+
+                <div class="table-responsive">
+                    <table class="table table-drawing table-compact mb-0">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="num">№</th>
+                                <th rowspan="2" class="text-center">Фладер</th>
+                                <th rowspan="2">Наименование</th>
+                                <th rowspan="2" class="num">Дължина<br>L, мм</th>
+                                <th rowspan="2" class="num">Ширина<br>W, мм</th>
+                                <th rowspan="2" class="num">Бр.</th>
+                                <th colspan="4" class="text-center">Кантове, мм</th>
+                                <th rowspan="2">Друго</th>
+                                <th rowspan="2">Обработка</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center">L горе</th>
+                                <th class="text-center">L долу</th>
+                                <th class="text-center">W ляво</th>
+                                <th class="text-center">W дясно</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for detail in group.list %}
+                                <tr>
+                                    <td class="num">{{ forloop.counter }}</td>
+                                    <td class="text-center">
+                                        {% if detail.material.has_grain and detail.grain_direction != 'ANY' %}
+                                            {{ detail.grain_direction }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ detail.name }}</td>
+                                    <td class="num">{{ detail.length }}</td>
+                                    <td class="num">{{ detail.width }}</td>
+                                    <td class="num">{{ detail.quantity }}</td>
+                                    <td class="text-center">{{ detail.edge_l_top|edge }}</td>
+                                    <td class="text-center">{{ detail.edge_l_bottom|edge }}</td>
+                                    <td class="text-center">{{ detail.edge_w_left|edge }}</td>
+                                    <td class="text-center">{{ detail.edge_w_right|edge }}</td>
+                                    <td class="cell-text">{{ detail.other|linebreaksbr }}</td>
+
+                                    <td class="cell-text">
+                                        {% if detail.processing %}
+                                            {{ detail.processing|linebreaksbr }}
+                                        {% else %}
+                                            {% for service in detail.services.all %}
+                                                {{ service.name }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        {% if detail.euro_joint_left != 'NO_JOINT' %}
+                                            <div>
+                                                Евросглобка, лява:
+                                                {{ detail.get_euro_joint_left_display }}
+                                            </div>
+                                        {% endif %}
+
+                                        {% if detail.euro_joint_right != 'NO_JOINT' %}
+                                            <div>
+                                                Евросглобка, дясна:
+                                                {{ detail.get_euro_joint_right_display }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-secondary">Все още няма добавени детайли.</p>
+    {% endif %}
+
+    <h2 class="h5 mt-4 mb-3">Чертежи</h2>
+
+    <ul class="mb-4">
+        {% for drawing in order.drawings.all %}
+            <li>
+                <a href="{% url 'orders:drawing-download' order.pk drawing.pk %}"
+                   target="_blank" rel="noopener">
+                    {{ drawing.file.name|cut:"orders/drawings/" }}
+                </a>
+            </li>
+        {% empty %}
+            <li class="text-secondary">Няма качени чертежи.</li>
+        {% endfor %}
+    </ul>
+
+    <form method="post" class="drawing-form mt-4" novalidate>
+        {% csrf_token %}
+
+        <div class="form-check">
+            {{ form.confirm }}
+            <label class="form-check-label" for="{{ form.confirm.id_for_label }}">
+                {{ form.confirm.label }}
+            </label>
+        </div>
+
+        {% for error in form.confirm.errors %}
+            <div class="field-error">{{ error }}</div>
+        {% endfor %}
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="submit" class="btn btn-accent">
+                Изпрати
+            </button>
+            <a class="btn btn-outline-secondary"
+               href="{% url 'orders:order-detail' order.pk %}">
+                Откажи
+            </a>
+        </div>
+    </form>
+{% endblock %}

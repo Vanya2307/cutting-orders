@@ -21,26 +21,22 @@
                 <dd>{{ order.contact_company }}</dd>
             {% endif %}
 
-            <dt>Създадена</dt>
-            <dd>{{ order.created_at|date:"d.m.Y H:i" }}</dd>
+            {% if order.submitted_at %}
+                <dt>Изпратена на</dt>
+                <dd>{{ order.submitted_at|date:"d.m.Y H:i" }}</dd>
+            {% else %}
+                <dt>Създадена</dt>
+                <dd>{{ order.created_at|date:"d.m.Y H:i" }}</dd>
+            {% endif %}
 
             <dt>Статус</dt>
             <dd>{{ order.get_status_display }}</dd>
         </dl>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
-        <h2 class="h4 mb-0">Детайли</h2>
-        
 
-        {% if order.status == 'DRAFT' %}
-            <a 
-                class="btn btn-accent" 
-                href="{% url 'orders:material-select' order.pk %}"
-            >
-                Избери материал
-            </a>
-        {% endif %}
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <h2 class="h4 mb-0">Детайли</h2>    
     </div>
 
 
@@ -78,8 +74,8 @@
                                 <th rowspan="2" class="num">Ширина<br>W, мм</th>
                                 <th rowspan="2" class="num">Бр.</th>
                                 <th colspan="4" class="text-center">Кантове, мм</th>
-                                <th rowspan="2">Обработка</th>
                                 <th rowspan="2">Друго</th>
+                                <th rowspan="2">Обработка</th>
                                 {% if order.status == 'DRAFT' %}
                                     <th rowspan="2"></th>
                                 {% endif %}
@@ -106,6 +102,7 @@
                                     <td class="text-center">{{ detail.edge_l_bottom|edge }}</td>
                                     <td class="text-center">{{ detail.edge_w_left|edge }}</td>
                                     <td class="text-center">{{ detail.edge_w_right|edge }}</td>
+                                    <td class="cell-text">{{ detail.other }}</td>
                                     <td class="cell-text">
                                         {% if detail.processing %}
                                             {{ detail.processing }}
@@ -120,7 +117,6 @@
                                             <div>Евросглобка дясна: {{ detail.get_euro_joint_right_display }}</div>
                                         {% endif %}
                                     </td>
-                                    <td class="cell-text">{{ detail.other }}</td>
                                     {% if order.status == 'DRAFT' %}
                                         <td class="text-end text-nowrap">
                                             <a href="{% url 'orders:detail-update' order.pk detail.pk %}">Редакция</a>
@@ -143,6 +139,15 @@
                     Добавете първия детайл: материал, размери, количество, кантове и обработки.
                 </p>
             </div>
+        </div>
+    {% endif %}
+
+    {% if order.status == 'DRAFT' %}
+        <div class="mb-3">
+            <a class="btn btn-accent"
+               href="{% url 'orders:material-select' order.pk %}">
+                Избери материал
+            </a>
         </div>
     {% endif %}
 
@@ -203,6 +208,19 @@
             </p>
         {% endif %}
     {% endwith %}
+
+    {% if order.status == 'DRAFT' %}
+        <div class="mt-4">
+            <a class="btn btn-accent"
+               href="{% url 'orders:order-submit' order.pk %}">
+                Изпрати
+            </a>
+        </div>
+    {% else %}
+        <p class="text-secondary mt-4 mb-0">
+            Поръчката е изпратена. За промени, моля, свържете се с нас.
+        </p>
+    {% endif %}
 
    
 {% endblock %}

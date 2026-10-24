@@ -10,7 +10,8 @@ from .models import Order, Detail, OrderDrawing
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
+from django.utils import timezone
 
 from catalog.forms import MaterialFilterForm
 from catalog.models import Material
@@ -112,6 +113,33 @@ class OrderSubmitView(DraftOrderMixin, FormView):
             and self.order.details.filter(services__drawing_requirement='RECOMMENDED').exists()
         )
         return context
+
+    def form_valid(self, form):
+        submitted_at = timezone.now()
+        year = timezone.localtime(submitted_at).year
+
+        try:
+            with transaction.atomic():
+                updated = Order.objects.filter(
+                    pk=self.order.pk,
+                    status='DRAFT',
+                ).update(
+                    status='SUBMITTED',
+                    submitted_at=submitted_at,
+                )
+
+                if not updated:
+                    return redirect('orders:order-detail', pk=self.order.pk)
+
+                number = Order.next_number(year)
+
+                Order.objects.filter(pk=self.order.pk).update(number=number)
+
+        except IntegrityError:
+            form.add_error(None, 'Поръчката не беше изпратена. Моля, опитайте отново.')
+            return self.form_invalid(form)
+
+        return redirect('orders:order-detail', pk=self.order.pk)
 
 
 

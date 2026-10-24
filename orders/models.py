@@ -44,6 +44,15 @@ class Order(models.Model):
             return self.number
         return f"{self.get_status_display()} #{self.pk} - {self.client.name}"
 
+    @classmethod
+    def next_number(cls, year):
+        prefix = f'A-{year}-'
+
+        numbers = cls.objects.filter(number__startswith=prefix).values_list('number', flat=True)
+        last_sequence = max((int(number[len(prefix):]) for number in numbers), default=0)
+
+        return f'{prefix}{last_sequence + 1:04d}'
+
 
 class Detail(models.Model):
     DIRECTION_CHOICES = [
