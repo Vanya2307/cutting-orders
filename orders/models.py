@@ -82,7 +82,7 @@ class Detail(models.Model):
         on_delete=models.PROTECT,
         related_name="details",
     )
-    name = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=20, blank=True)
     length = models.PositiveIntegerField(validators=[MinValueValidator(18)])
     width = models.PositiveIntegerField(validators=[MinValueValidator(18)])
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])

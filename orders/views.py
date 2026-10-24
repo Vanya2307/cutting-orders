@@ -1,3 +1,8 @@
+from io import BytesIO
+
+from django.core.files.base import ContentFile
+from production.excel import generate_order_excel
+
 from pathlib import Path
 
 from django.http import FileResponse, Http404
@@ -117,6 +122,7 @@ class OrderSubmitView(DraftOrderMixin, FormView):
     def form_valid(self, form):
         submitted_at = timezone.now()
         year = timezone.localtime(submitted_at).year
+        saved_file_name = None
 
         try:
             with transaction.atomic():
@@ -131,11 +137,32 @@ class OrderSubmitView(DraftOrderMixin, FormView):
                 if not updated:
                     return redirect('orders:order-detail', pk=self.order.pk)
 
-                number = Order.next_number(year)
+                self.order.refresh_from_db()
+                self.order.number = Order.next_number(year)
 
-                Order.objects.filter(pk=self.order.pk).update(number=number)
+                workbook = generate_order_excel(self.order)
 
-        except IntegrityError:
+                with BytesIO() as buffer:
+                    workbook.save(buffer)
+
+                    self.order.excel_file.save(
+                        f'{self.order.number}.xlsx',
+                        ContentFile(buffer.getvalue()),
+                        save=False,
+                    )
+
+                saved_file_name = self.order.excel_file.name
+
+                self.order.save(
+                    update_fields=['number', 'excel_file'],
+                )
+
+        except (IntegrityError, OSError):
+            if saved_file_name:
+                self.order.excel_file.storage.delete(saved_file_name)
+
+            self.order.refresh_from_db()
+
             form.add_error(None, 'Поръчката не беше изпратена. Моля, опитайте отново.')
             return self.form_invalid(form)
 
@@ -322,5 +349,23 @@ class OrderDrawingDeleteView(DraftDetailMixin, DeleteView):
         context['order'] = self.object.order
         return context
 
+
+class OrderExcelDownloadView(View):
+    def get(self, request, order_pk):
+        order = get_object_or_404(
+            Order,
+            pk=order_pk,
+            pk__in=request.session.get('order_ids', []),
+            status='SUBMITTED',
+        )
+
+        if not order.excel_file:
+            raise Http404('Няма генериран Excel файл.')
+
+        return FileResponse(
+            order.excel_file.open('rb'),
+            as_attachment=True,
+            filename=f'{order.number}.xlsx',
+        )
 
 

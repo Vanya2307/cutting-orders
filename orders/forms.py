@@ -152,6 +152,7 @@ class DetailForm(forms.ModelForm):
 
 
         help_texts = {
+            'name': 'До 20 символа. Например: Врата 1, Д1.',
             'services': 'Изберете необходимите обработки.',
             'processing': 'Например: разстояние между отворите за панти.',
             'other': 'Например: кант в различен цвят, сдвоени детайли.',
@@ -160,7 +161,7 @@ class DetailForm(forms.ModelForm):
 
         widgets = {
             'name': forms.TextInput(
-                attrs={'placeholder': 'Например: Страница, Дъно, Врата...'}
+                attrs={'placeholder': 'Например: Стр, Врата...'}
             ),
             'services': forms.CheckboxSelectMultiple(),
             'processing': forms.Textarea(
@@ -178,7 +179,7 @@ class DetailForm(forms.ModelForm):
                 'invalid_choice': 'Моля, изберете материал от списъка.',
             },
             'name': {
-                'max_length': 'Наименованието може да е до 100 символа.',
+                'max_length': 'Наименованието може да е до 20 символа.',
             },
             'length': {
                 'required': 'Моля, въведете дължина.',

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Качване на чертеж | Поръчка #{{ order.pk }}{% endblock %}
+{% block title %}Качване на чертеж | Чернова на поръчка{% endblock %}
 
 {% block content %}
     <div class="mb-3">
@@ -10,7 +10,7 @@
     <h1 class="page-title">Качване на чертеж</h1>
 
     <p class="text-secondary mb-4">
-        Поръчка #{{ order.pk }} &middot; {{ order.contact_name }}
+        Чернова на поръчка &middot; {{ order.contact_name }}
     </p>
 
     {# enctype is required, otherwise the file never reaches Django #}

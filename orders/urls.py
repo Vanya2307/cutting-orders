@@ -11,6 +11,7 @@ from .views import (
     OrderDrawingDownloadView,
     OrderDrawingDeleteView,
     OrderSubmitView,
+    OrderExcelDownloadView
 )
 
 app_name = 'orders'
@@ -33,4 +34,5 @@ urlpatterns = [
 
     path('<int:order_pk>/materials/', MaterialSelectView.as_view(), name='material-select'),
     path('<int:order_pk>/submit/', OrderSubmitView.as_view(), name='order-submit'),
+    path('<int:order_pk>/excel/', OrderExcelDownloadView.as_view(), name='order-excel'),
 ]

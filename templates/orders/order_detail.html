@@ -6,7 +6,11 @@
 {% block content %}
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-4 mb-4">
         <h1 class="page-title">
-            Поръчка {% if order.number %}{{ order.number }}{% else %}#{{ order.pk }}{% endif %}
+            {% if order.number %}
+                Поръчка {{ order.number }}
+            {% else %}
+                Чернова на поръчка
+            {% endif %}
         </h1>
 
         <dl class="title-block mb-0">
@@ -39,6 +43,10 @@
         <h2 class="h4 mb-0">Детайли</h2>    
     </div>
 
+    <p class="small text-secondary mb-3">
+        Всички размери са в милиметри (мм).
+    </p>
+
 
         {% if details %}
         {% regroup details by material as material_groups %}
@@ -70,11 +78,11 @@
                                 <th rowspan="2" class="num">№</th>
                                 <th rowspan="2" class="text-center">Фладер</th>
                                 <th rowspan="2">Наименование</th>
-                                <th rowspan="2" class="num">Дължина<br>L, мм</th>
-                                <th rowspan="2" class="num">Ширина<br>W, мм</th>
+                                <th rowspan="2" class="text-center">Дължина<br>L</th>
+                                <th rowspan="2" class="text-center">Ширина<br>W</th>
                                 <th rowspan="2" class="num">Бр.</th>
-                                <th colspan="4" class="text-center">Кантове, мм</th>
-                                <th rowspan="2">Друго</th>
+                                <th colspan="4" class="text-center">Кантове</th>
+                                <th rowspan="2" class="text-center">Друго</th>
                                 <th rowspan="2">Обработка</th>
                                 {% if order.status == 'DRAFT' %}
                                     <th rowspan="2"></th>
@@ -95,14 +103,14 @@
                                         {% if detail.material.has_grain and detail.grain_direction != 'ANY' %}{{ detail.grain_direction }}{% endif %}
                                     </td>
                                     <td>{{ detail.name }}</td>
-                                    <td class="num">{{ detail.length }}</td>
-                                    <td class="num">{{ detail.width }}</td>
-                                    <td class="num">{{ detail.quantity }}</td>
+                                    <td class="text-center">{{ detail.length }}</td>
+                                    <td class="text-center">{{ detail.width }}</td>
+                                    <td class="text-center">{{ detail.quantity }}</td>
                                     <td class="text-center">{{ detail.edge_l_top|edge }}</td>
                                     <td class="text-center">{{ detail.edge_l_bottom|edge }}</td>
                                     <td class="text-center">{{ detail.edge_w_left|edge }}</td>
                                     <td class="text-center">{{ detail.edge_w_right|edge }}</td>
-                                    <td class="cell-text">{{ detail.other }}</td>
+                                    <td class="text-center">{{ detail.other }}</td>
                                     <td class="cell-text">
                                         {% if detail.processing %}
                                             {{ detail.processing }}
@@ -217,9 +225,12 @@
             </a>
         </div>
     {% else %}
-        <p class="text-secondary mt-4 mb-0">
-            Поръчката е изпратена. За промени, моля, свържете се с нас.
-        </p>
+        <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+            {% if order.excel_file %}
+                <a class="btn btn-accent" href="{% url 'orders:order-excel' order.pk %}">Изтегли Excel</a>
+            {% endif %}
+            <p class="text-secondary mb-0">Поръчката е изпратена. За промени, моля, свържете се с нас.</p>
+        </div>
     {% endif %}
 
    

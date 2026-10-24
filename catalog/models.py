@@ -45,6 +45,25 @@ class Material(models.Model):
     def __str__(self):
         return f"{self.decor_code} {self.decor_name}"
 
+    def get_label(self):
+        label = f'{self.decor_code} {self.decor_name}'
+
+        prefixes = {
+            'MDF': 'MDF',
+            'HDF': 'HDF',
+            'TOP': 'Плот',
+            'BACK': 'Гръб',
+        }
+
+        prefix = prefixes.get(self.material_type)
+
+        if prefix:
+            return f'{prefix} {label}'
+
+        return label
+
+
+
     def clean(self):
         super().clean()
 

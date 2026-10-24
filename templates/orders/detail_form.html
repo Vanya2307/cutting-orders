@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    {% if object %}Редакция на детайл{% else %}Нов детайл{% endif %} | Поръчка #{{ order.pk }}
+    {% if object %}Редакция на детайл{% else %}Нов детайл{% endif %} | Чернова на поръчка
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     </h1>
 
     <p class="text-secondary mb-3">
-        Поръчка #{{ order.pk }} &middot; {{ order.contact_name }}
+        Чернова на поръчка &middot; {{ order.contact_name }}
     </p>
 
     <form method="post" class="drawing-form" novalidate>
@@ -167,6 +167,24 @@
             </div>
         </fieldset>
 
+        {# Друго #}
+        <fieldset class="mb-4">
+            <div>
+                <label class="h5 d-block mb-3" for="{{ form.other.id_for_label }}">
+                    {{ form.other.label }}
+                </label>
+                {{ form.other }}
+                {% if form.other.help_text %}
+                    <div class="form-text" id="{{ form.other.auto_id }}_helptext">
+                        {{ form.other.help_text }}
+                    </div>
+                {% endif %}
+                {% for error in form.other.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </fieldset>
+
         {# Обработки и уточнение #}
         <fieldset class="mb-4">
             <legend class="h5 float-none mb-3">{{ form.services.label }}</legend>
@@ -242,21 +260,7 @@
             </div>
         </fieldset>
 
-        {# Друго #}
-        <div>
-            <label class="h5 d-block mb-3" for="{{ form.other.id_for_label }}">
-                {{ form.other.label }}
-            </label>
-            {{ form.other }}
-            {% if form.other.help_text %}
-                <div class="form-text" id="{{ form.other.auto_id }}_helptext">
-                    {{ form.other.help_text }}
-                </div>
-            {% endif %}
-            {% for error in form.other.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
-        </div>
+        
 
         <div class="d-flex flex-wrap gap-2 mt-4">
             <button type="submit" class="btn btn-accent">
