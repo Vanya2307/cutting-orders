@@ -369,3 +369,15 @@ class OrderExcelDownloadView(View):
         )
 
 
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'orders/order_list.html'
+    context_object_name = 'orders'
+    paginate_by = 20
+
+    def get_queryset(self):
+        order_ids = self.request.session.get('order_ids', [])
+
+        return super().get_queryset().filter(pk__in=order_ids).order_by('-created_at', '-pk')
+

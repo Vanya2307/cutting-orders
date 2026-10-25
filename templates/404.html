@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Страницата не е намерена | Онлайн заявки{% endblock %}
+
+{% block main_class %}home-main{% endblock %}
+
+{% block content %}
+    <section class="home-hero">
+        <div class="container text-center">
+            <p class="error-code">404</p>
+
+            <h1 class="home-title text-white">Страницата не е намерена</h1>
+
+            <p class="home-lead mx-auto">
+                Страницата не съществува или вече не е достъпна.
+                Ако търсите поръчка, отворете я от браузъра,
+                в който е създадена, докато сесията е активна.
+            </p>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a class="btn btn-accent btn-lg" href="{% url 'home' %}">Към началото</a>
+                <a class="btn btn-outline-light btn-lg" href="{% url 'catalog:material-list' %}">Материали</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

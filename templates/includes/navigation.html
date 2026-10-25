@@ -1,43 +1,55 @@
-<nav class="navbar navbar-expand-md bg-dark" data-bs-theme="dark">
+{% with current=request.resolver_match.url_name %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">
-            Онлайн заявки
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+            <svg class="brand-blade" viewBox="-104 -104 208 208" aria-hidden="true">
+                <path fill-rule="evenodd" d="M0.0,-82.0 L23.3,-97.2 L22.0,-83.1 Q22.7,-66.2 31.4,-75.8 L58.8,-80.9 L52.2,-68.4 Q46.3,-52.5 58.0,-58.0 L85.3,-52.2 L74.4,-43.2 Q62.9,-30.8 75.8,-31.4 L98.8,-15.6 L85.2,-11.4 Q69.9,-4.4 82.0,0.0 L97.2,23.3 L83.1,22.0 Q66.2,22.7 75.8,31.4 L80.9,58.8 L68.4,52.2 Q52.5,46.3 58.0,58.0 L52.2,85.3 L43.2,74.4 Q30.8,62.9 31.4,75.8 L15.6,98.8 L11.4,85.2 Q4.4,69.9 0.0,82.0 L-23.3,97.2 L-22.0,83.1 Q-22.7,66.2 -31.4,75.8 L-58.8,80.9 L-52.2,68.4 Q-46.3,52.5 -58.0,58.0 L-85.3,52.2 L-74.4,43.2 Q-62.9,30.8 -75.8,31.4 L-98.8,15.6 L-85.2,11.4 Q-69.9,4.4 -82.0,0.0 L-97.2,-23.3 L-83.1,-22.0 Q-66.2,-22.7 -75.8,-31.4 L-80.9,-58.8 L-68.4,-52.2 Q-52.5,-46.3 -58.0,-58.0 L-52.2,-85.3 L-43.2,-74.4 Q-30.8,-62.9 -31.4,-75.8 L-15.6,-98.8 L-11.4,-85.2 Q-4.4,-69.9 -0.0,-82.0 Z M-22,0 a22,22 0 1,0 44,0 a22,22 0 1,0 -44,0 Z"/>
+            </svg>
+            <span>Начало</span>
         </a>
 
-        <a class="btn btn-accent" href="{% url 'orders:order-create' %}">
-            Нова поръчка
-        </a>
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#main-navigation"
-            aria-controls="main-navigation"
-            aria-expanded="false"
-            aria-label="Отвори или затвори менюто"
-        >
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNavigation"
+                aria-controls="mainNavigation" aria-expanded="false"
+                aria-label="Отвори менюто">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="main-navigation">
-            <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse" id="mainNavigation">
+            
+            <form class="nav-search mx-lg-auto my-3 my-lg-0" method="get" action="{% url 'catalog:material-list' %}" role="search">
+                <input class="form-control form-control-sm" type="search" name="q"
+                       value="{{ request.GET.q }}" placeholder="Код или декор"
+                       aria-label="Търсене на материал">
+                <button class="btn btn-sm" type="submit" aria-label="Търси">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="6.5" cy="6.5" r="4.5"/>
+                        <line x1="10" y1="10" x2="14" y2="14"/>
+                    </svg>
+                </button>
+            </form>
+           
+
+            <ul class="navbar-nav align-items-lg-center gap-lg-2">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">
-                        Начало
-                    </a>
+                    <a class="nav-link{% if current == 'material-list' %} active{% endif %}"
+                       href="{% url 'catalog:material-list' %}">Материали</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'catalog:material-list' %}">
-                        Материали
-                    </a>
+                    <a class="nav-link{% if current == 'service-list' %} active{% endif %}"
+                       href="{% url 'catalog:service-list' %}">Услуги</a>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'catalog:service-list' %}">
-                        Услуги
-                    </a>
+                    <a class="nav-link{% if current == 'order-list' %} active{% endif %}"
+                       href="{% url 'orders:order-list' %}">Моите поръчки</a>
+                </li>
+                
+                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <a class="btn btn-accent btn-sm" href="{% url 'orders:order-create' %}">Нова поръчка</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
+{% endwith %}

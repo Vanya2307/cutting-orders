@@ -1,7 +1,7 @@
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Material, Service
-from .forms import MaterialForm, ServiceForm
+from .forms import MaterialFilterForm, MaterialForm, ServiceForm
 from django.urls import reverse_lazy, reverse
 
 from django.db.models.deletion import ProtectedError
@@ -10,6 +10,12 @@ class MaterialListView(ListView):
     model = Material
     template_name = "catalog/material_list.html"
     context_object_name = "materials"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filter_form = MaterialFilterForm(self.request.GET or None)
+
+        return self.filter_form.filter_queryset(queryset)
 
 
 class MaterialDetailView(DetailView):

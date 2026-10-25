@@ -172,22 +172,24 @@ class MaterialFilterForm(forms.Form):
             queryset = queryset.filter(manufacturer=manufacturer)
 
         if q:
-            search = Q()
+            words = q.split()
+            for word in words:
+                search = Q()
 
-            variants = {
-                q,
-                q.lower(),
-                q.upper(),
-                q.capitalize(),
-                q.title(),
-            }
+                variants = {
+                    word,
+                    word.lower(),
+                    word.upper(),
+                    word.capitalize(),
+                    word.title(),
+                }
 
-            for variant in variants:
-                search |= (
-                    Q(decor_code__icontains=variant) 
-                    | Q(decor_name__icontains=variant)
-                )
+                for variant in variants:
+                    search |= (
+                        Q(decor_code__icontains=variant) 
+                        | Q(decor_name__icontains=variant)
+                    )
 
-            queryset = queryset.filter(search)
+                queryset = queryset.filter(search)
 
         return queryset

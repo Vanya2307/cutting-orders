@@ -382,3 +382,285 @@ button:focus-visible {
     min-width: 10rem;
     max-width: 18rem;
 }
+
+
+/* Начална страница - тъмна, с циркулярен диск
+   В base.html: <main class="{% block main_class %}container{% endblock %}"> */
+
+/* Без светлия "лист" на началната страница */
+body > main.home-main {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: none;
+}
+
+.home-hero {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-height: 0;
+    padding: 4rem 0;
+    background-color: var(--graphite-900);
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(ellipse at 20% 45%, rgba(255, 255, 255, 0.07), transparent 60%);
+    background-size: 40px 40px, 40px 40px, 100% 100%;
+    /* Снимка от цеха (по желание): добавя се като последен слой, например
+       , linear-gradient(rgba(28, 32, 35, 0.85), rgba(28, 32, 35, 0.85)), url("../img/workshop.jpg") center / cover */
+}
+
+.home-hero > .container {
+    position: relative;
+    z-index: 1;
+}
+
+/*  Диск  */
+
+.home-blade {
+    position: absolute;
+    top: 50%;
+    right: -28vmin;
+    width: 100vmin;
+    height: 100vmin;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.home-blade svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    animation: blade-spin 120s linear infinite;
+}
+
+@keyframes blade-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-blade svg {
+        animation: none;
+    }
+}
+
+.blade-body {
+    stroke: #4b5257;
+    stroke-width: 1;
+}
+
+.blade-tips {
+    fill: var(--accent-dark);
+}
+
+.blade-ring {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 1;
+}
+
+.blade-slot {
+    stroke: var(--graphite-900);
+    stroke-width: 3;
+}
+
+.blade-cut {
+    fill: var(--graphite-900);
+}
+
+.blade-flange {
+    fill: #30363a;
+    stroke: rgba(255, 255, 255, 0.08);
+}
+
+.blade-text {
+    fill: rgba(255, 255, 255, 0.18);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+}
+
+/*  Текст  */
+
+.home-title {
+    margin-bottom: 1.25rem;
+    color: var(--accent-light);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.home-lead {
+    max-width: 30rem;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.15rem;
+}
+
+.home-note {
+    margin: 1.5rem 0 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.home-note a {
+    color: var(--accent-light);
+}
+
+/* Карта с числа */
+
+.home-card {
+    position: relative;
+    max-width: 400px;
+    margin: 1.5rem auto 0;
+    padding: 3.25rem 2.25rem 1.75rem;
+    background-color: rgba(28, 32, 35, 0.88);
+    border: 1px solid var(--graphite-500);
+    color: #ffffff;
+}
+
+.home-card-tab {
+    position: absolute;
+    top: -1.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.6rem 2.5rem;
+    background-color: var(--graphite-900);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+}
+
+.home-stats > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.home-stats > div:last-child {
+    border-bottom: none;
+}
+
+.home-stats dt {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.15rem;
+    font-weight: 400;
+}
+
+.home-stats dd {
+    margin: 0;
+    color: var(--accent-light);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/*  За телефон  */
+
+@media (max-width: 991px) {
+    
+    .home-blade {
+        right: -45vmin;
+        opacity: 0.45;
+    }
+}
+
+/*  Лого в навигацията  */
+
+.brand-blade {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+}
+
+/*  Търсене в навигацията  */
+
+.nav-search {
+    display: flex;
+    align-items: stretch;
+}
+
+.nav-search .form-control {
+    width: 260px;
+    background-color: var(--graphite-700);
+    border: 1px solid var(--graphite-500);
+    border-right: none;
+    border-radius: 2px 0 0 2px;
+    color: #ffffff;
+}
+
+.nav-search .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.nav-search .form-control:focus {
+    border-color: var(--accent);
+    box-shadow: none;
+}
+
+.nav-search .btn {
+    display: flex;
+    align-items: center;
+    padding: 0 0.6rem;
+    background-color: var(--graphite-700);
+    border: 1px solid var(--graphite-500);
+    border-left: none;
+    border-radius: 0 2px 2px 0;
+}
+
+.nav-search .btn svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: var(--accent-light);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.nav-search .btn:hover svg {
+    stroke: #ffffff;
+}
+
+@media (max-width: 991px) {
+    .nav-search .form-control {
+        width: 100%;
+    }
+}
+
+
+/*  Страница 404  */
+
+.error-code {
+    display: inline-block;
+    position: relative;
+    margin-bottom: 2rem;
+    padding: 0 1.5rem 0.75rem;
+    color: var(--accent-light);
+    font-size: clamp(5rem, 14vw, 9rem);
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Размерна линия под числото, като на чертеж */
+.error-code::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 11px;
+    border-left: 1px solid var(--accent);
+    border-right: 1px solid var(--accent);
+    background: linear-gradient(var(--accent), var(--accent)) center / 100% 1px no-repeat;
+}

@@ -6,7 +6,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
         <h1 class="page-title">Материали</h1>
         
-        <a class="btn btn-accent" href="{% url 'catalog:material-create' %}">+ Добави материал</a>
+        <a class="btn btn-accent" href="{% url 'catalog:material-create' %}">Добави материал</a>
     </div>
 
     {% if materials %}
@@ -43,11 +43,29 @@
     {% else %}
         <div class="card">
             <div class="card-body py-5 text-center">
-                <p class="fs-5 mb-2">Все още няма въведени материали.</p>
-                <p class="text-secondary mb-4">
-                    Добавете първия материал.
-                </p>
-                <a class="btn btn-outline-accent" href="{% url 'catalog:material-create' %}">+ Добави материал</a>
+                {% if request.GET.q %}
+                    <p class="fs-5 mb-2">
+                        Няма намерени материали за „{{ request.GET.q }}“.
+                    </p>
+                    <p class="text-secondary mb-4">
+                        Опитайте с друг код или име на декора.
+                    </p>
+                    <a class="btn btn-outline-accent"
+                       href="{% url 'catalog:material-list' %}">
+                        Всички материали
+                    </a>
+                {% else %}
+                    <p class="fs-5 mb-2">
+                        Все още няма въведени материали.
+                    </p>
+                    <p class="text-secondary mb-4">
+                        Добавете първия материал.
+                    </p>
+                    <a class="btn btn-outline-accent"
+                       href="{% url 'catalog:material-create' %}">
+                        Добави материал
+                    </a>
+                {% endif %}
             </div>
         </div>
     {% endif %}
