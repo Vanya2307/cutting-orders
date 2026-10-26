@@ -664,3 +664,40 @@ body > main.home-main {
     border-right: 1px solid var(--accent);
     background: linear-gradient(var(--accent), var(--accent)) center / 100% 1px no-repeat;
 }
+
+
+/* Footer с контакти */
+
+.site-footer {
+    background-color: var(--graphite-800);
+    border-top: 1px solid var(--graphite-500);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.footer-title {
+    margin-bottom: 0.4rem;
+    color: var(--accent-light);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.site-footer a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+    color: var(--accent-light);
+}
+
+.footer-copy {
+    margin: 0;
+    padding: 0.55rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #b8c0c6;
+    font-size: 0.8rem;
+    text-align: center;
+}

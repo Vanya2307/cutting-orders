@@ -74,7 +74,7 @@ The project is based on practical work in a furniture workshop. The Excel export
 - Clearing cookies or session expiry may remove access. The orders remain stored in the database.
 - Submitted orders are read-only, with restrictions enforced in the views.
 
-Authentication is excluded from this course project. Catalog editing is open in this version, which is intended for local demonstration. Accounts and staff-only management are planned for Django Advanced.
+Authentication is excluded from this course project. Catalog editing is open in this version, which is intended for local demonstration. Accounts and staff-only management are planned for a later version.
 
 Submission stores the order and creates its Excel file. Email delivery is planned for a later version.
 
