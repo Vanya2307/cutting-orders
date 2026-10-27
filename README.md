@@ -209,3 +209,11 @@ Dimensions, quantities, edges and thicknesses are numeric. Unbanded edges are em
 - Email notifications for submitted orders.
 - Material photos in the catalog.
 - Euro-joint illustrations in the part form.
+
+## Course Materials
+
+Kalaydzhiev, D. Python Web - Django Basics. SoftUni, 2026.
+
+## Acknowledgments
+
+This project was developed with the assistance of Claude (Anthropic).
