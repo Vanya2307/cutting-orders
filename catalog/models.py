@@ -94,8 +94,11 @@ class Material(models.Model):
         if self.material_type in ('LPDCH', 'MDF', 'HDF'):
             length -= 30
             width -= 30
-        elif self.material_type in ('TOP', 'BACK'):
+        elif self.material_type == 'TOP':
             length -= 20
+        elif self.material_type == 'BACK':
+            length -= 20
+            width -= 20
 
         return length, width
 
