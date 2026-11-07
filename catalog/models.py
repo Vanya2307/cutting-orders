@@ -123,6 +123,18 @@ class Material(models.Model):
             ),
         ]
 
+    def to_snapshot(self):
+        return {
+            'material_type_display': self.get_material_type_display(),
+            'manufacturer_display': self.get_manufacturer_display(),
+            'decor_code': self.decor_code,
+            'decor_name': self.decor_name,
+            'label': self.get_label(),
+            'thickness': str(self.thickness),
+            'has_grain': self.has_grain,
+        }
+
+
 
 class Service(models.Model):
     name = models.CharField(max_length=100, unique=True)

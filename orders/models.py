@@ -100,6 +100,9 @@ class Detail(models.Model):
     other = models.CharField(max_length=255, blank=True)
     processing = models.CharField(max_length=255, blank=True)
 
+    material_snapshot = models.JSONField(default=dict, blank=True)
+    services_snapshot = models.JSONField(default=list, blank=True)
+
 
     def __str__(self):
         if self.name:
@@ -167,6 +170,39 @@ class Detail(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    def capture_snapshots(self):
+
+        self.material_snapshot = self.material.to_snapshot()
+
+        self.services_snapshot = [
+            {'name': service.name}
+            for service in self.services.all()
+        ]
+
+
+    def material_info(self):
+        if self.order.status == 'DRAFT' or not self.material_snapshot:
+            return self.material.to_snapshot()
+
+        return self.material_snapshot
+
+    def services_info(self):
+        if self.order.status == 'DRAFT' or not self.material_snapshot:
+            return [{'name': service.name} for service in self.services.all()]
+
+        return self.services_snapshot
+
+
+    def sort_key(self):
+        return (
+            self.material_info()['decor_code'], 
+            self.material_id, 
+            self.pk,
+        )
+                
+
+        
 
 
 

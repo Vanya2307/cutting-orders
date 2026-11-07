@@ -61,13 +61,12 @@ class OrderDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        ordered_details = (
+        orders_details = (
             self.object.details
             .select_related('material')
             .prefetch_related('services')
-            .order_by('material__decor_code', 'material_id', 'pk')
         )
-        context['details'] = ordered_details
+        context['details'] = sorted(orders_details, key=Detail.sort_key)
         return context
 
 class DraftDetailMixin:
@@ -139,6 +138,19 @@ class OrderSubmitView(DraftOrderMixin, FormView):
 
                 self.order.refresh_from_db()
                 self.order.number = Order.next_number(year)
+
+                details = list(
+                    self.order.details
+                    .select_related('material')
+                    .prefetch_related('services')
+                )
+
+                for detail in details:
+                    detail.capture_snapshots()
+
+                Detail.objects.bulk_update(details, ['material_snapshot', 'services_snapshot'])
+
+
 
                 workbook = generate_order_excel(self.order)
 

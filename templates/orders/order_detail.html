@@ -54,14 +54,15 @@
         {% for group in material_groups %}
             <div class="mb-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
-                    <h3 class="h6 mb-0">
-                        {{ group.grouper }}
-                        <span class="text-secondary fw-normal">
-                            &middot; {{ group.grouper.get_material_type_display }}
-                            &middot; {{ group.grouper.thickness|floatformat:"-1" }} мм
-                        </span>
-                    </h3>
-                    
+                    {% with info=group.list.0.material_info %}
+                        <h3 class="h6 mb-0">
+                            {{ info.decor_code }} {{ info.decor_name }}
+                            <span class="text-secondary fw-normal">
+                                &middot; {{ info.material_type_display }}
+                                &middot; {{ info.thickness|floatformat:"-1" }} мм
+                            </span>
+                        </h3>
+                    {% endwith %}
 
                     {% if order.status == 'DRAFT' %}
                         <a class="small text-nowrap"
@@ -100,7 +101,7 @@
                                 <tr>
                                     <td class="num">{{ forloop.counter }}</td>
                                     <td class="text-center">
-                                        {% if detail.material.has_grain and detail.grain_direction != 'ANY' %}{{ detail.grain_direction }}{% endif %}
+                                        {% if detail.material_info.has_grain and detail.grain_direction != 'ANY' %}{{ detail.grain_direction }}{% endif %}
                                     </td>
                                     <td>{{ detail.name }}</td>
                                     <td class="text-center">{{ detail.length }}</td>
@@ -115,7 +116,7 @@
                                         {% if detail.processing %}
                                             {{ detail.processing }}
                                         {% else %}
-                                            {% for service in detail.services.all %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                            {% for service in detail.services_info %}{{ service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
                                         {% endif %}
 
                                         {% if detail.euro_joint_left != 'NO_JOINT' %}

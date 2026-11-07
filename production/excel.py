@@ -3,6 +3,8 @@ from openpyxl import Workbook
 from django.utils import timezone
 from openpyxl.styles import Alignment, Font, Border, Side
 
+from orders.models import Detail
+
 def generate_order_excel(order):
     workbook = Workbook()
     worksheet = workbook.active
@@ -111,8 +113,10 @@ def generate_order_excel(order):
         order.details
         .select_related('material')
         .prefetch_related('services')
-        .order_by('material__decor_code', 'material_id', 'pk')
     )
+
+    details = sorted(details, key=Detail.sort_key)
+    
 
     row_number = 4
     previous_material_id = None
@@ -120,6 +124,7 @@ def generate_order_excel(order):
 
     for detail in details:
         material = detail.material
+        info = detail.material_info()
 
         # 2 empty rows between different materials
 
@@ -130,7 +135,7 @@ def generate_order_excel(order):
         reference_number += 1
 
         processing = detail.processing.strip() or ', '.join(
-            service.name for service in detail.services.all()
+            service['name'] for service in detail.services_info()
         )
 
         processing_lines = [processing] if processing else []
@@ -149,13 +154,13 @@ def generate_order_excel(order):
 
         grain = (
             detail.grain_direction
-            if material.has_grain and detail.grain_direction in ('L', 'W')
+            if info['has_grain'] and detail.grain_direction in ('L', 'W')
             else None
         )
 
         values = [
             reference_number,
-            material.get_label(),
+            info['label'],
             grain,
             detail.name,
             detail.length,
@@ -166,7 +171,7 @@ def generate_order_excel(order):
             float(detail.edge_w_left) if detail.edge_w_left else None,
             float(detail.edge_w_right) if detail.edge_w_right else None,
             detail.other,
-            float(material.thickness),
+            float(info['thickness']),
             f'{order.number}-{order.contact_name}',
             '\n'.join(processing_lines),
 
