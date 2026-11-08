@@ -30,17 +30,17 @@ class Material(models.Model):
         'TOP': {'length': 4100, 'widths': [600, 635, 920]},
         'BACK': {'length': 4100, 'widths': [620, 640]},
     }
-    material_type = models.CharField(max_length=5, choices=TYPE_CHOICES)
-    manufacturer = models.CharField(max_length=50, choices=MANUFACTURER_CHOICES)
+    material_type = models.CharField(max_length=5, choices=TYPE_CHOICES, verbose_name='Тип')
+    manufacturer = models.CharField(max_length=50, choices=MANUFACTURER_CHOICES, verbose_name='Производител')
 
-    decor_code = models.CharField(max_length=20)
-    decor_name = models.CharField(max_length=100)
+    decor_code = models.CharField(max_length=20, verbose_name='Код на декора')
+    decor_name = models.CharField(max_length=100, verbose_name='Име на декора')
 
-    thickness = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(3)])
-    board_length = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    board_width = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    thickness = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(3)], verbose_name='Дебелина, мм')
+    board_length = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name='Дължина на плочата, мм')
+    board_width = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name='Ширина на плочата, мм')
 
-    has_grain = models.BooleanField(default=False)
+    has_grain = models.BooleanField(default=False, verbose_name='Фладер')
 
     def __str__(self):
         return f"{self.decor_code} {self.decor_name}"
@@ -137,15 +137,21 @@ class Material(models.Model):
 
 
 class Service(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, verbose_name='Наименование')
     DRAWING_CHOICES = [
         ('NONE', 'Без чертеж'),
         ('RECOMMENDED', 'Препоръчителен'),
         ('REQUIRED', 'Задължителен'),
 
     ]
-    drawing_requirement = models.CharField(max_length=15, choices=DRAWING_CHOICES)
+    drawing_requirement = models.CharField(max_length=15, choices=DRAWING_CHOICES, verbose_name='Изискване за чертеж')
+
+
+    class Meta:
+        verbose_name = 'Услуга'
+        verbose_name_plural = 'Услуги'
 
     def __str__(self):
         return self.name
+    
 
