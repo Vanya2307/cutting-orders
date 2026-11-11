@@ -154,13 +154,21 @@ Python 3.12 and pip are required. Clone the repository with Git, or download and
    python manage.py migrate
    ```
 
-6. Start the server:
+6. Create the default groups and configure their permissions:
+
+   ```bash
+   python manage.py setup_groups
+   ```
+
+   The `Клиенти` and `Цех` groups are created if missing, and their permissions are synchronised with `setup_groups.py`. Manual permission changes for these groups are overwritten on every run.
+
+7. Start the server:
 
    ```bash
    python manage.py runserver
    ```
 
-7. Open <http://127.0.0.1:8000/>.
+8. Open <http://127.0.0.1:8000/>.
 
 No environment variables or database credentials are required for local testing. SQLite creates the local database when migrations are applied. No prepopulated data is required.
 
