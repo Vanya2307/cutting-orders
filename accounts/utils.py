@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 
 
 
-def clean_phone(value):
+def normalize_phone(value):
         
     phone = re.sub(r'[\s()-]', '', value or '')
 

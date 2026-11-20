@@ -6,6 +6,7 @@ from .models import Client, Detail, OrderDrawing
 from django.core.validators import FileExtensionValidator
 
 from catalog.models import Material
+from accounts.utils import normalize_phone
 
 
 class ClientForm(forms.ModelForm):
@@ -56,24 +57,7 @@ class ClientForm(forms.ModelForm):
         }
 
     def clean_phone(self):
-        phone = self.cleaned_data.get('phone', '')
-
-        phone = re.sub(r'[\s()-]', '', phone)
-
-        if phone.startswith('+359'):
-            phone = phone[4:]
-
-
-        if phone.startswith('0'):
-            phone = phone[1:]
-
-        if not re.fullmatch(r'[0-9]{9}', phone):
-            raise forms.ValidationError(
-                'Моля, въведете валиден български мобилен номер.'
-            )
-
-
-        return f'+359{phone}'
+        return normalize_phone(self.cleaned_data.get('phone', ''))
 
 
     def validate_unique(self):

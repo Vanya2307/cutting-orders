@@ -260,6 +260,7 @@ button:focus-visible {
 .drawing-form input[type="number"],
 .drawing-form input[type="email"],
 .drawing-form input[type="tel"],
+.drawing-form input[type="password"],
 .drawing-form select,
 .drawing-form textarea {
     display: block;
@@ -301,6 +302,7 @@ button:focus-visible {
 .drawing-form .form-check {
     padding-left: 0;
 }
+
 
 /* Обозначения за чертеж */
 
