@@ -703,3 +703,35 @@ body > main.home-main {
     font-size: 0.8rem;
     text-align: center;
 }
+
+
+
+/* -Вход- */
+
+.login-form {
+    max-width: 28rem;
+}
+
+/* -Акаунт в навигацията- */
+
+.nav-account {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-account form {
+    margin: 0;
+}
+
+.nav-user {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.9rem;
+}
+
+.nav-logout {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}

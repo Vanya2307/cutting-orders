@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.contrib.auth.views import LoginView
 
 from .forms import RegistrationForm
 from .models import Profile
@@ -28,3 +29,8 @@ class RegistrationView(CreateView):
         login(self.request, self.object)
 
         return response
+
+
+class UserLogingView(LoginView):
+    template_name = 'accounts/login.html'
+    redirect_authenticated_user = True

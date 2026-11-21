@@ -39,15 +39,37 @@
                     <a class="nav-link{% if current == 'service-list' %} active{% endif %}"
                        href="{% url 'catalog:service-list' %}">Услуги</a>
                 </li>
+
+                {% if user.is_authenticated %}
                 
-                <li class="nav-item">
-                    <a class="nav-link{% if current == 'order-list' %} active{% endif %}"
-                       href="{% url 'orders:order-list' %}">Моите поръчки</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if current == 'order-list' %} active{% endif %}"
+                            href="{% url 'orders:order-list' %}">Моите поръчки</a>
+                    </li>
+                {% endif %}
                 
                 <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                     <a class="btn btn-accent btn-sm" href="{% url 'orders:order-create' %}">Нова поръчка</a>
                 </li>
+
+                {% if user.is_authenticated %}
+                    <li class="nav-item nav-account ms-lg-3 mt-2 mt-lg-0">
+                        <span class="nav-user">{{ user.get_full_name|default:user.username }}</span>
+                        <form method="post" action="{% url 'accounts:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link nav-logout">Изход</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link{% if current == 'login' %} active{% endif %}"
+                        href="{% url 'accounts:login' %}">Вход</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if current == 'register' %} active{% endif %}"
+                        href="{% url 'accounts:register' %}">Регистрация</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

@@ -1,5 +1,5 @@
 <label class="form-label" for="{{ field.id_for_label }}">
-    {{ field.label }}
+    {{ label|default:field.label }}
     {% if not field.field.required %}
         <span class="text-secondary fw-normal">(по желание)</span>
     {% endif %}

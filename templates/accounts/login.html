@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход | Онлайн заявки{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Вход</h1>
+
+    <p class="text-secondary mb-4">
+        Влезте с потребителското си име и парола.
+    </p>
+
+    <form method="post" class="drawing-form login-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row g-4">
+            <div class="col-12">
+                {% include 'includes/form_field.html' with field=form.username label='Потребителско име' %}
+            </div>
+            <div class="col-12">
+                {% include 'includes/form_field.html' with field=form.password %}
+            </div>
+        </div>
+
+        <input type="hidden" name="next" value="{{ next }}">
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="submit" class="btn btn-accent">Вход</button>
+            <a class="btn btn-outline-secondary" href="{% url 'home' %}">Откажи</a>
+        </div>
+    </form>
+
+    <p class="text-secondary mt-4 mb-0">
+        Нямате акаунт? <a href="{% url 'accounts:register' %}">Регистрация</a>
+    </p>
+{% endblock %}
