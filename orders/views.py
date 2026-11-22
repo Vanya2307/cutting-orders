@@ -3,13 +3,15 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from production.excel import generate_order_excel
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from pathlib import Path
 
 from django.http import FileResponse, Http404
 from django.views import View
 
 from django.views.generic import CreateView, FormView, DetailView, ListView, UpdateView, DeleteView
-from .forms import ClientForm, DetailForm, OrderDrawingForm, OrderSubmitForm
+from .forms import DetailForm, OrderContactForm, OrderDrawingForm, OrderSubmitForm
 
 from .models import Order, Detail, OrderDrawing
 from django.shortcuts import redirect, get_object_or_404
@@ -21,42 +23,46 @@ from django.utils import timezone
 from catalog.forms import MaterialFilterForm
 from catalog.models import Material
 
-class OrderCreateView(FormView):
-    form_class = ClientForm
+class OrderCreateView(LoginRequiredMixin, CreateView):
+    form_class = OrderContactForm
     template_name = 'orders/order_form.html'
 
+    def get_initial(self):
+        initial = super().get_initial()
+
+        user = self.request.user
+        profile = getattr(user, 'profile', None)
+
+        initial.update(
+            {
+                'contact_name': user.get_full_name(),
+                'contact_phone': profile.phone.removeprefix('+359') if profile else '',
+                'contact_email': user.email,
+                'contact_company': profile.company if profile else '',
+
+            }
+        )
+
+        return initial
+
     def form_valid(self, form):
-        data = form.cleaned_data
+        form.instance.owner = self.request.user
+        
+        return super().form_valid(form)
 
-        with transaction.atomic():
-            client = getattr(form, 'matching_client', None)
+    def get_success_url(self):
+        return reverse(
+            'orders:order-detail',
+            kwargs={'pk': self.object.pk},
+        )
 
-            if client is None:
-                client = form.save()
-
-            order = Order.objects.create(
-                client=client,
-                contact_name=data['name'],
-                contact_phone=data['phone'],
-                contact_email=data['email'],
-                contact_company=data['company'],
-            )
-
-        order_ids = self.request.session.get('order_ids', [])
-        order_ids.append(order.pk)
-        self.request.session['order_ids'] = order_ids
-
-        return redirect('orders:order-detail', pk=order.pk)
-
-class OrderDetailView(DetailView):
+class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = 'orders/order_detail.html'
     context_object_name = 'order'
 
-    def get_queryset(self):
-        order_ids = self.request.session.get('order_ids', [])
-        
-        return super().get_queryset().filter(pk__in=order_ids)
+    def get_queryset(self): 
+        return super().get_queryset().filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -71,11 +77,9 @@ class OrderDetailView(DetailView):
 
 class DraftDetailMixin:
     def get_queryset(self):
-        order_ids = self.request.session.get('order_ids', [])
-
         return super().get_queryset().filter(
             order_id=self.kwargs['order_pk'],
-            order_id__in=order_ids,
+            order__owner=self.request.user,
             order__status='DRAFT',
         )
 
@@ -85,13 +89,13 @@ class DraftOrderMixin:
         self.order = get_object_or_404(
             Order,
             pk=kwargs['order_pk'],
-            pk__in=request.session.get('order_ids', []),
+            owner=request.user,
             status='DRAFT',
         )
         return super().dispatch(request, *args, **kwargs)
 
 
-class OrderSubmitView(DraftOrderMixin, FormView):
+class OrderSubmitView(LoginRequiredMixin, DraftOrderMixin, FormView):
     form_class = OrderSubmitForm
     template_name = 'orders/order_confirm_submit.html'
 
@@ -182,7 +186,7 @@ class OrderSubmitView(DraftOrderMixin, FormView):
 
 
 
-class MaterialSelectView(DraftOrderMixin, ListView):
+class MaterialSelectView(LoginRequiredMixin, DraftOrderMixin, ListView):
     model = Material
     template_name = 'orders/material_select.html'
     context_object_name = 'materials'
@@ -228,7 +232,7 @@ class MaterialSelectView(DraftOrderMixin, ListView):
         return context
     
 
-class DetailCreateView(DraftOrderMixin, CreateView):
+class DetailCreateView(LoginRequiredMixin, DraftOrderMixin, CreateView):
     model = Detail
     form_class = DetailForm
     template_name = 'orders/detail_form.html'
@@ -264,7 +268,7 @@ class DetailCreateView(DraftOrderMixin, CreateView):
 
         return kwargs
 
-class DetailUpdateView(DraftDetailMixin, UpdateView):
+class DetailUpdateView(LoginRequiredMixin, DraftDetailMixin, UpdateView):
     model = Detail
     form_class = DetailForm
     template_name = 'orders/detail_form.html'
@@ -283,7 +287,7 @@ class DetailUpdateView(DraftDetailMixin, UpdateView):
         return context
 
 
-class DetailDeleteView(DraftDetailMixin, DeleteView):
+class DetailDeleteView(LoginRequiredMixin, DraftDetailMixin, DeleteView):
     model = Detail
     template_name = 'orders/detail_confirm_delete.html'
 
@@ -300,7 +304,7 @@ class DetailDeleteView(DraftDetailMixin, DeleteView):
         return context
 
 
-class OrderDrawingCreateView(DraftOrderMixin, CreateView):
+class OrderDrawingCreateView(LoginRequiredMixin, DraftOrderMixin, CreateView):
     model = OrderDrawing
     form_class = OrderDrawingForm
     template_name = 'orders/order_drawing_form.html'
@@ -324,13 +328,13 @@ class OrderDrawingCreateView(DraftOrderMixin, CreateView):
         return context
 
 
-class OrderDrawingDownloadView(View):
+class OrderDrawingDownloadView(LoginRequiredMixin, View):
     def get(self, request, order_pk, pk):
         drawing = get_object_or_404(
             OrderDrawing,
             pk=pk,
             order_id=order_pk,
-            order_id__in=request.session.get('order_ids', []),
+            order__owner=request.user,
         )
 
         return FileResponse(
@@ -341,7 +345,7 @@ class OrderDrawingDownloadView(View):
 
 
 
-class OrderDrawingDeleteView(DraftDetailMixin, DeleteView):
+class OrderDrawingDeleteView(LoginRequiredMixin, DraftDetailMixin, DeleteView):
     model = OrderDrawing
     template_name = 'orders/order_drawing_confirm_delete.html'
 
@@ -362,12 +366,12 @@ class OrderDrawingDeleteView(DraftDetailMixin, DeleteView):
         return context
 
 
-class OrderExcelDownloadView(View):
+class OrderExcelDownloadView(LoginRequiredMixin, View):
     def get(self, request, order_pk):
         order = get_object_or_404(
             Order,
             pk=order_pk,
-            pk__in=request.session.get('order_ids', []),
+            owner=request.user,
             status='SUBMITTED',
         )
 
@@ -382,14 +386,12 @@ class OrderExcelDownloadView(View):
 
 
 
-class OrderListView(ListView):
+class OrderListView(LoginRequiredMixin, ListView):
     model = Order
     template_name = 'orders/order_list.html'
     context_object_name = 'orders'
     paginate_by = 20
 
     def get_queryset(self):
-        order_ids = self.request.session.get('order_ids', [])
-
-        return super().get_queryset().filter(pk__in=order_ids).order_by('-created_at', '-pk')
+        return super().get_queryset().filter(owner=self.request.user).order_by('-created_at', '-pk')
 

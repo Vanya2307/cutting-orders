@@ -6,7 +6,8 @@
     <h1 class="page-title">Нова поръчка</h1>
 
     <p class="text-secondary mb-4">
-        Моля, попълнете данните си за контакт. Следващата стъпка е добавяне на детайлите за рязане и кантиране.
+        Проверете данните за контакт за тази поръчка. 
+        Следващата стъпка е добавяне на детайлите за рязане и кантиране.
     </p>
 
     <form method="post" class="drawing-form" novalidate>
@@ -22,39 +23,39 @@
 
         <div class="row g-4">
             <div class="col-md-6">
-                <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-                {{ form.name }}
-                {% for error in form.name.errors %}
+                <label class="form-label" for="{{ form.contact_name.id_for_label }}">{{ form.contact_name.label }}</label>
+                {{ form.contact_name }}
+                {% for error in form.contact_name.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                <label class="form-label" for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
                 <div class="input-group">
                     <span class="input-group-text">+359</span>
-                    {{ form.phone }}
+                    {{ form.contact_phone }}
                 </div>
-                {% if form.phone.help_text %}
-                    <div class="form-text">{{ form.phone.help_text }}</div>
+                {% if form.contact_phone.help_text %}
+                    <div class="form-text">{{ form.contact_phone.help_text }}</div>
                 {% endif %}
-                {% for error in form.phone.errors %}
+                {% for error in form.contact_phone.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-                {{ form.email }}
-                {% for error in form.email.errors %}
+                <label class="form-label" for="{{ form.contact_email.id_for_label }}">{{ form.contact_email.label }}</label>
+                {{ form.contact_email }}
+                {% for error in form.contact_email.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="{{ form.company.id_for_label }}">{{ form.company.label }}</label>
-                {{ form.company }}
-                {% for error in form.company.errors %}
+                <label class="form-label" for="{{ form.contact_company.id_for_label }}">{{ form.contact_company.label }}</label>
+                {{ form.contact_company }}
+                {% for error in form.contact_company.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>

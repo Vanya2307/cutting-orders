@@ -3,16 +3,7 @@ from decimal import Decimal
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
-
-
-class Client(models.Model):
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=20, unique=True)
-    email = models.EmailField(blank=True)
-    company = models.CharField(max_length=100, blank=True)
-
-    def __str__(self):
-        return f"{self.name} - {self.phone}"
+from django.conf import settings
 
 
 class Order(models.Model):
@@ -22,10 +13,11 @@ class Order(models.Model):
     ]
     
     
-    client = models.ForeignKey(
-        "orders.Client",
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="orders",
+        verbose_name='Собственик',
     )
 
     contact_name = models.CharField(max_length=100)
@@ -42,7 +34,7 @@ class Order(models.Model):
     def __str__(self):
         if self.number:
             return self.number
-        return f"{self.get_status_display()} #{self.pk} - {self.client.name}"
+        return f"{self.get_status_display()} #{self.pk} - {self.contact_name}"
 
     @classmethod
     def next_number(cls, year):

@@ -1,7 +1,6 @@
-import re
 
 from django import forms
-from .models import Client, Detail, OrderDrawing
+from .models import Detail, Order, OrderDrawing
 
 from django.core.validators import FileExtensionValidator
 
@@ -9,30 +8,30 @@ from catalog.models import Material
 from accounts.utils import normalize_phone
 
 
-class ClientForm(forms.ModelForm):
+class OrderContactForm(forms.ModelForm):
     class Meta:
-        model = Client
-        fields = ['name', 'phone', 'email', 'company']
+        model = Order
+        fields = ['contact_name', 'contact_phone', 'contact_email', 'contact_company']
 
         labels = {
-            'name': 'Име',
-            'phone': 'Телефон',
-            'email': 'Имейл',
-            'company': 'Фирма',
+            'contact_name': 'Име',
+            'contact_phone': 'Телефон',
+            'contact_email': 'Имейл',
+            'contact_company': 'Фирма',
         }
 
         widgets = {
-            'name': forms.TextInput(
+            'contact_name': forms.TextInput(
                 attrs={'placeholder': 'Например: Петър Петров'}
             ),
-            'phone': forms.TextInput(
+            'contact_phone': forms.TextInput(
                 attrs={
                     'type': 'tel',
                     'placeholder': 'Например: 888 888 888',
                     'autocomplete': 'tel',
                 }
             ),
-            'email': forms.EmailInput(
+            'contact_email': forms.EmailInput(
                 attrs={
                     'placeholder': 'Например: pepi@example.com',
                     'autocomplete': 'email',
@@ -41,55 +40,24 @@ class ClientForm(forms.ModelForm):
         }
 
         help_texts = {
-            'phone': 'Въведете 9 цифри без +359 и без начална 0.',
+            'contact_phone': 'Въведете 9 цифри без +359 и без начална 0.',
         }
 
         error_messages = {
-            'name': {
+            'contact_name': {
                 'required': 'Моля, въведете Вашето име.',
             },
-            'phone': {
+            'contact_phone': {
                 'required': 'Моля, въведете Вашия телефонен номер.',
             },
-            'email': {
+            'contact_email': {
                 'invalid': 'Моля, въведете валиден имейл адрес.'
             }
         }
 
-    def clean_phone(self):
-        return normalize_phone(self.cleaned_data.get('phone', ''))
+    def clean_contact_phone(self):
+        return normalize_phone(self.cleaned_data.get('contact_phone', ''))
 
-
-    def validate_unique(self):
-        # Allow existing phones; order creation must reuse their Client.
-        pass
-
-
-    def clean(self):
-        cleaned_data = super().clean()
-        self.matching_client = None
-
-        name = cleaned_data.get('name')
-        phone = cleaned_data.get('phone')
-
-        if not name or not phone:
-            return cleaned_data
-
-        client = Client.objects.filter(phone=phone).first()
-
-        if client:
-            input_name = " ".join(name.split()).lower()
-
-            db_name = " ".join(client.name.split()).lower()
-
-            if input_name != db_name:
-                raise forms.ValidationError(
-                    'Проверете въведените име и телефонен номер.'
-                )
-
-            self.matching_client = client
-
-        return cleaned_data
 
 
 
