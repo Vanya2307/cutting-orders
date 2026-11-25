@@ -1,13 +1,22 @@
 
 from django.shortcuts import render
-from catalog.models import Material, Service
+
 
 
 def home(request):
 
-    context = {
-        'materials_count': Material.objects.count(),
-        'services_count': Service.objects.count(),
-    }
+    context = {}
+
+    if request.user.is_authenticated:
+        orders = request.user.orders
+
+        context['drafts_count'] = orders.filter(
+            status='DRAFT',
+        ).count
+
+        context['submitted_count'] = orders.filter(
+                    status='SUBMITTED',
+                ).count
+
 
     return render(request, "home.html", context)

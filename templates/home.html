@@ -6,7 +6,6 @@
 
 {% block content %}
     <section class="home-hero">
-        {# Голям циркулярен диск вдясно, частично извън екрана :-D #}
         <div class="home-blade" aria-hidden="true">
             <svg viewBox="-220 -220 440 440">
                 <defs>
@@ -25,12 +24,22 @@
                 <circle r="165" class="blade-ring"/>
                 <circle r="135" class="blade-ring"/>
                 <circle r="95" class="blade-ring"/>
-                <path d="M182.3,66.4 L137.6,59.7" class="blade-slot"/><circle cx="134.9" cy="58.5" r="4" class="blade-cut"/>
-                <path d="M-66.4,182.3 L-59.7,137.6" class="blade-slot"/><circle cx="-58.5" cy="134.9" r="4" class="blade-cut"/>
-                <path d="M-182.3,-66.4 L-137.6,-59.7" class="blade-slot"/><circle cx="-134.9" cy="-58.5" r="4" class="blade-cut"/>
-                <path d="M66.4,-182.3 L59.7,-137.6" class="blade-slot"/><circle cx="58.5" cy="-134.9" r="4" class="blade-cut"/>
 
-                <text class="blade-text"><textPath href="#blade-text-ring">Ø 300 &middot; Z 36 &middot; 3.2 &middot; разкрой и кантиране &middot; Ø 300 &middot; Z 36 &middot; 3.2 &middot; разкрой и кантиране</textPath></text>
+                <path d="M182.3,66.4 L137.6,59.7" class="blade-slot"/>
+                <circle cx="134.9" cy="58.5" r="4" class="blade-cut"/>
+
+                <path d="M-66.4,182.3 L-59.7,137.6" class="blade-slot"/>
+                <circle cx="-58.5" cy="134.9" r="4" class="blade-cut"/>
+
+                <path d="M-182.3,-66.4 L-137.6,-59.7" class="blade-slot"/>
+                <circle cx="-134.9" cy="-58.5" r="4" class="blade-cut"/>
+
+                <path d="M66.4,-182.3 L59.7,-137.6" class="blade-slot"/>
+                <circle cx="58.5" cy="-134.9" r="4" class="blade-cut"/>
+
+                <text class="blade-text">
+                    <textPath href="#blade-text-ring">Ø 300 &middot; Z 36 &middot; 3.2 &middot; разкрой и кантиране &middot; Ø 300 &middot; Z 36 &middot; 3.2 &middot; разкрой и кантиране</textPath>
+                </text>
 
                 <circle r="48" class="blade-flange"/>
                 <circle r="20" class="blade-cut"/>
@@ -42,37 +51,92 @@
                 <div class="col-lg-6">
                     <h1 class="home-title">Онлайн заявки<br>за рязане и кантиране</h1>
 
-                    <p class="home-lead">Изберете материал, въведете размерите и изпратете заявката към цеха.</p>
+                    <p class="home-lead">
+                        Изберете материал, въведете размерите и изпратете заявката към цеха.
+                    </p>
 
                     <div class="d-flex flex-wrap gap-2">
-                        <a class="btn btn-accent btn-lg" href="{% url 'orders:order-create' %}">Нова поръчка</a>
-                        <a class="btn btn-outline-light btn-lg" href="{% url 'catalog:material-list' %}">Материали</a>
+                        <a class="btn btn-accent btn-lg" href="{% url 'orders:order-create' %}">
+                            Нова поръчка
+                        </a>
+                        <a class="btn btn-outline-light btn-lg" href="{% url 'catalog:material-list' %}">
+                            Материали
+                        </a>
                     </div>
-
-                    {% if user.is_authenticated and user.orders.exists %}
-                        <p class="home-note">
-                            <a href="{% url 'orders:order-list' %}">
-                                Към моите поръчки &rarr;
-                            </a>
-                        </p>
-                    {% endif %}
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="home-card">
-                        <div class="home-card-tab">В цеха</div>
+                    {% if user.is_authenticated %}
+                        <div class="home-card">
+                            <div class="home-card-tab">Моите поръчки</div>
 
-                        <dl class="home-stats mb-0">
-                            <div>
-                                <dt>Материали в каталога</dt>
-                                <dd>{{ materials_count }}</dd>
-                            </div>
-                            <div>
-                                <dt>Видове обработки</dt>
-                                <dd>{{ services_count }}</dd>
-                            </div>
-                        </dl>
-                    </div>
+                            <p class="home-greeting">
+                                Здравейте, {{ user.first_name|default:user.username }}!
+                            </p>
+
+                            <dl class="home-stats mb-0">
+                                <div>
+                                    <dt>Чернови</dt>
+                                    <dd>{{ drafts_count }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Изпратени</dt>
+                                    <dd>{{ submitted_count }}</dd>
+                                </div>
+                            </dl>
+
+                            <a class="btn btn-outline-light w-100 mt-3" href="{% url 'orders:order-list' %}">
+                                Към моите поръчки
+                            </a>
+
+                            <p class="home-card-foot">
+                                <a href="{% url 'accounts:profile' %}">Профил</a>
+                            </p>
+                        </div>
+                    {% else %}
+                        <div class="home-card">
+                            <div class="home-card-tab">Вход</div>
+
+                            <form method="post" action="{% url 'accounts:login' %}" class="home-login">
+                                {% csrf_token %}
+
+                                <label class="form-label" for="home-username">
+                                    Потребителско име
+                                </label>
+                                <input
+                                    type="text"
+                                    id="home-username"
+                                    name="username"
+                                    class="form-control"
+                                    maxlength="150"
+                                    autocapitalize="none"
+                                    autocomplete="username"
+                                    required
+                                >
+
+                                <label class="form-label" for="home-password">
+                                    Парола
+                                </label>
+                                <input
+                                    type="password"
+                                    id="home-password"
+                                    name="password"
+                                    class="form-control"
+                                    autocomplete="current-password"
+                                    required
+                                >
+
+                                <button type="submit" class="btn btn-accent w-100 mt-4">
+                                    Вход
+                                </button>
+                            </form>
+
+                            <p class="home-card-foot">
+                                Нямате акаунт?
+                                <a href="{% url 'accounts:register' %}">Регистрация</a>
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

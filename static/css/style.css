@@ -506,14 +506,6 @@ body > main.home-main {
     font-size: 1.15rem;
 }
 
-.home-note {
-    margin: 1.5rem 0 0;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.home-note a {
-    color: var(--accent-light);
-}
 
 /* Карта с числа */
 
@@ -566,6 +558,52 @@ body > main.home-main {
     font-size: 2.5rem;
     font-weight: 700;
     line-height: 1;
+}
+
+
+.home-greeting {
+    margin: 0 0 0.5rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.15rem;
+}
+
+.home-login .form-label {
+    margin: 1rem 0 0.35rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.home-login .form-label:first-of-type {
+    margin-top: 0;
+}
+
+.home-login .form-control {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 0;
+    color: #ffffff;
+}
+
+.home-login .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-light);
+    box-shadow: none;
+    color: #ffffff;
+}
+
+
+.home-login .form-control:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 100px #2b3034 inset;
+    -webkit-text-fill-color: #ffffff;
+}
+
+.home-card-foot {
+    margin: 1.25rem 0 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.home-card-foot a {
+    color: var(--accent-light);
 }
 
 /*  За телефон  */
@@ -708,7 +746,8 @@ body > main.home-main {
 
 /* -Вход- */
 
-.login-form {
+.login-form,
+.narrow-form {
     max-width: 28rem;
 }
 
@@ -727,6 +766,12 @@ body > main.home-main {
 .nav-user {
     color: rgba(255, 255, 255, 0.55);
     font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.nav-user:hover,
+.nav-user.active {
+    color: #fff;
 }
 
 .nav-logout {
@@ -734,4 +779,33 @@ body > main.home-main {
     border: 0;
     padding: 0;
     cursor: pointer;
+}
+
+
+/* -Съобщения- */
+
+.site-messages {
+    margin-top: 1.5rem;
+}
+
+/* -Профил- */
+
+.profile-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.profile-facts dt {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.profile-facts dd {
+    margin: 0;
+    font-size: 1.1rem;
 }
