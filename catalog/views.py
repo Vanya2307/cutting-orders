@@ -1,4 +1,4 @@
-
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Material, Service
 from .forms import MaterialFilterForm, MaterialForm, ServiceForm
@@ -24,14 +24,18 @@ class MaterialDetailView(DetailView):
     context_object_name = "material"
 
 
-class MaterialCreateView(CreateView):
+class MaterialCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'catalog.add_material'
+
     model = Material
     form_class = MaterialForm
     template_name = 'catalog/material_form.html'
     success_url = reverse_lazy('catalog:material-list')
 
 
-class MaterialUpdateView(UpdateView):
+class MaterialUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'catalog.change_material'
+
     model = Material
     form_class = MaterialForm
     template_name = 'catalog/material_form.html'
@@ -40,7 +44,9 @@ class MaterialUpdateView(UpdateView):
         return reverse('catalog:material-detail', kwargs={'pk': self.object.pk})
 
 
-class MaterialDeleteView(DeleteView):
+class MaterialDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'catalog.delete_material'
+
     model = Material
     template_name = 'catalog/material_confirm_delete.html'
     success_url = reverse_lazy('catalog:material-list')
@@ -66,14 +72,18 @@ class ServiceDetailView(DetailView):
     context_object_name = "service"
 
 
-class ServiceCreateView(CreateView):
+class ServiceCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'catalog.add_service'
+
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
     success_url = reverse_lazy('catalog:service-list')
 
 
-class ServiceUpdateView(UpdateView):
+class ServiceUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'catalog.change_service'
+
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
@@ -83,7 +93,9 @@ class ServiceUpdateView(UpdateView):
 
 
 
-class ServiceDeleteView(DeleteView):
+class ServiceDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'catalog.delete_service'
+
     model = Service
     template_name = 'catalog/service_confirm_delete.html'
     success_url = reverse_lazy('catalog:service-list')

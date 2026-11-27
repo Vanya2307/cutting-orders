@@ -7,11 +7,16 @@
 
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
         <h1 class="page-title">{{ material }}</h1>
-        <div class="d-flex gap-2">
-           
-            <a class="btn btn-outline-accent" href="{% url 'catalog:material-update' material.pk %}">Редактирай</a>
-            <a class="btn btn-outline-danger" href="{% url 'catalog:material-delete' material.pk %}">Изтрий</a>
-        </div>
+        {% if perms.catalog.change_material or perms.catalog.delete_material %}
+            <div class="d-flex gap-2">
+                {% if perms.catalog.change_material %}
+                    <a class="btn btn-outline-accent" href="{% url 'catalog:material-update' material.pk %}">Редактирай</a>
+                {% endif %}
+                {% if perms.catalog.delete_material %}
+                    <a class="btn btn-outline-danger" href="{% url 'catalog:material-delete' material.pk %}">Изтрий</a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 
     <div class="card">

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Нямате достъп | Онлайн заявки{% endblock %}
+
+{% block main_class %}home-main{% endblock %}
+
+{% block content %}
+    <section class="home-hero">
+        <div class="container text-center">
+            <p class="error-code">403</p>
+
+            <h1 class="home-title text-white">Нямате достъп</h1>
+
+            <p class="home-lead mx-auto">
+                Нямате необходимите права за тази страница.
+                Ако смятате, че трябва да имате достъп, свържете се с нас.
+            </p>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a class="btn btn-accent btn-lg" href="{% url 'home' %}">Към началото</a>
+                <a class="btn btn-outline-light btn-lg" href="{% url 'catalog:material-list' %}">Материали</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
