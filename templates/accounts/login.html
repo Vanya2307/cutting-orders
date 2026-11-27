@@ -26,6 +26,7 @@
             </div>
             <div class="col-12">
                 {% include 'includes/form_field.html' with field=form.password %}
+                <a class="d-inline-block small mt-2" href="{% url 'accounts:password-reset' %}">Забравена парола?</a>
             </div>
         </div>
 

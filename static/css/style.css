@@ -596,6 +596,15 @@ body > main.home-main {
     -webkit-text-fill-color: #ffffff;
 }
 
+
+.home-forgot {
+    display: block;
+    margin-top: 0.4rem;
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--accent-light);
+}
+
 .home-card-foot {
     margin: 1.25rem 0 0;
     text-align: center;
