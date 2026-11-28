@@ -1,6 +1,7 @@
 # Virtual environment
 .venv/
 
+
 # Python cache
 __pycache__/
 *.py[cod]
@@ -13,8 +14,10 @@ db.sqlite3-journal
 media/
 
 # Local secrets
-.env/
 .env.*
+.env
+!.env.example
+staticfiles/
 
 # Editor settings
 .vscode/
