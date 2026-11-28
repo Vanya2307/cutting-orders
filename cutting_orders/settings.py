@@ -86,8 +86,8 @@ if os.getenv("POSTGRES_DB"):
             'NAME': os.environ['POSTGRES_DB'],
             'USER': os.environ['POSTGRES_USER'],
             'PASSWORD': os.environ['POSTGRES_PASSWORD'],
-            'HOST': os.environ('POSTGRES_HOST', 'localhost'),
-            'PORT': os.environ('POSTGRES_PORT', '5432'),
+            'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+            'PORT': os.getenv('POSTGRES_PORT', '5432'),
         }
     }
 else:
